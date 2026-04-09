@@ -1,16 +1,50 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import BalanceCard from "@/components/BalanceCard";
+import QuickActions from "@/components/QuickActions";
+import HomeExtras from "@/components/HomeExtras";
+import { Diamond } from "lucide-react";
 
-// IMPORTANT: Fully REPLACE this with your own code
-const PlaceholderIndex = () => {
-  // PLACEHOLDER: Replace this entire return statement with the user's app.
-  // The inline background color is intentionally not part of the design system.
+const Index = () => {
   return (
-    <div className="flex min-h-screen items-center justify-center" style={{ backgroundColor: '#fcfbf8' }}>
-      <img data-lovable-blank-page-placeholder="REMOVE_THIS" src="/placeholder.svg" alt="Your app will live here!" />
+    <div className="min-h-screen bg-background pb-20">
+      <div className="max-w-md mx-auto px-4 pt-6 space-y-6 animate-fade-in">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="gradient-primary p-2 rounded-xl">
+              <Diamond size={20} className="text-primary-foreground" />
+            </div>
+            <div>
+              <h1 className="text-lg font-bold text-gradient">TREASURIT</h1>
+              <p className="text-[10px] text-muted-foreground font-medium">Your financial partner</p>
+            </div>
+          </div>
+          <div className="w-9 h-9 rounded-full bg-muted flex items-center justify-center">
+            <span className="text-sm font-bold text-muted-foreground">T</span>
+          </div>
+        </div>
+
+        {/* Balance */}
+        <BalanceCard />
+
+        {/* Promo Slide */}
+        <div className="bg-card border border-border rounded-xl p-4">
+          <p className="text-sm font-bold text-foreground">Get the best out of Treasurit 🚀</p>
+          <p className="text-xs text-muted-foreground mt-1">
+            Save regularly, earn rewards, and access T-Funds — zero-interest loans for committed users.
+          </p>
+        </div>
+
+        {/* Quick Actions */}
+        <div>
+          <h2 className="text-sm font-bold mb-3 text-foreground">Services</h2>
+          <QuickActions />
+        </div>
+
+        {/* Extras */}
+        <HomeExtras />
+      </div>
     </div>
   );
 };
-
-const Index = PlaceholderIndex;
 
 export default Index;
