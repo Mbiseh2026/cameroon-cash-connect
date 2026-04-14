@@ -6,7 +6,7 @@ import { Switch } from "@/components/ui/switch";
 import { Progress } from "@/components/ui/progress";
 import { useState } from "react";
 import { toast } from "sonner";
-import { Plus, Target } from "lucide-react";
+import { Plus, Target, ArrowRight, ArrowLeft, MessageCircle, Calendar, Coins } from "lucide-react";
 
 interface Goal {
   id: string;
@@ -22,27 +22,55 @@ const GOAL_OPTIONS = [
   "Buy a car/bike", "Back to school", "Celebrations", "Other",
 ];
 
+const SAVING_FREQUENCIES = [
+  { label: "Daily", value: "daily", min: 500 },
+  { label: "Weekly", value: "weekly", min: 2000 },
+  { label: "Monthly", value: "monthly", min: 5000 },
+];
+
 const GoalSavings = () => {
   const [goals] = useState<Goal[]>([
     { id: "1", name: "Buy a Land", target: 200000, saved: 75000, duration: "6 months", autoDeposit: true },
     { id: "2", name: "Start a Business", target: 500000, saved: 120000, duration: "12 months", autoDeposit: false },
   ]);
   const [showCreate, setShowCreate] = useState(false);
+  const [step, setStep] = useState(1);
   const [goalName, setGoalName] = useState("");
   const [targetAmount, setTargetAmount] = useState("");
   const [duration, setDuration] = useState("");
+  const [frequency, setFrequency] = useState("");
+  const [savingAmount, setSavingAmount] = useState("");
   const [autoDeposit, setAutoDeposit] = useState(false);
 
-  const handleCreate = () => {
-    if (!goalName || !targetAmount || !duration) {
-      toast.error("Please fill all fields");
-      return;
-    }
-    toast.success(`Goal "${goalName}" created!`);
-    setShowCreate(false);
+  const totalSteps = 4;
+
+  const resetForm = () => {
+    setStep(1);
     setGoalName("");
     setTargetAmount("");
     setDuration("");
+    setFrequency("");
+    setSavingAmount("");
+    setAutoDeposit(false);
+    setShowCreate(false);
+  };
+
+  const handleCreate = () => {
+    toast.success(`Goal "${goalName}" created!`);
+    resetForm();
+  };
+
+  const canNext = () => {
+    if (step === 1) return !!goalName;
+    if (step === 2) return !!targetAmount;
+    if (step === 3) return !!frequency && !!savingAmount;
+    return !!duration;
+  };
+
+  const selectedFreq = SAVING_FREQUENCIES.find(f => f.value === frequency);
+
+  const openWhatsApp = () => {
+    window.open("https://wa.me/237600000000?text=Hi%20Treasurit,%20I%20need%20help%20budgeting%20my%20savings%20goal.", "_blank");
   };
 
   return (
@@ -82,47 +110,203 @@ const GoalSavings = () => {
               );
             })}
 
-            <Button onClick={() => setShowCreate(true)} className="w-full h-12 gradient-primary text-primary-foreground font-bold">
+            <Button onClick={() => { setShowCreate(true); setStep(1); }} className="w-full h-12 gradient-primary text-primary-foreground font-bold">
               <Plus size={18} className="mr-2" /> Create Savings Goal
             </Button>
           </div>
         ) : (
-          <div className="space-y-4">
-            <div>
-              <Label className="text-sm font-semibold">Select Your Goal</Label>
-              <div className="grid grid-cols-2 gap-2 mt-2">
-                {GOAL_OPTIONS.map((opt) => (
-                  <button
-                    key={opt}
-                    onClick={() => setGoalName(opt)}
-                    className={`text-xs font-semibold p-2.5 rounded-lg border transition-all ${
-                      goalName === opt ? "border-primary bg-primary/5" : "border-border bg-card"
-                    }`}
-                  >
-                    {opt}
-                  </button>
-                ))}
+          <div className="space-y-6">
+            {/* Progress indicator */}
+            <div className="flex items-center gap-2">
+              {Array.from({ length: totalSteps }, (_, i) => (
+                <div key={i} className="flex-1 flex items-center gap-1">
+                  <div className={`h-1.5 flex-1 rounded-full transition-all duration-300 ${
+                    i + 1 <= step ? "bg-primary" : "bg-muted"
+                  }`} />
+                </div>
+              ))}
+              <span className="text-xs text-muted-foreground font-semibold ml-1">{step}/{totalSteps}</span>
+            </div>
+
+            {/* Step 1: Select Goal */}
+            {step === 1 && (
+              <div className="space-y-4 animate-fade-in">
+                <div className="text-center space-y-1">
+                  <Target size={32} className="text-primary mx-auto" />
+                  <h2 className="text-base font-bold">Select Your Goal</h2>
+                  <p className="text-xs text-muted-foreground">What are you saving for?</p>
+                </div>
+                <div className="grid grid-cols-2 gap-2.5">
+                  {GOAL_OPTIONS.map((opt) => (
+                    <button
+                      key={opt}
+                      onClick={() => setGoalName(opt)}
+                      className={`text-sm font-semibold p-3.5 rounded-xl border-2 transition-all ${
+                        goalName === opt
+                          ? "border-primary bg-primary/5 text-primary"
+                          : "border-border bg-card text-foreground hover:border-muted-foreground/30"
+                      }`}
+                    >
+                      {opt}
+                    </button>
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
 
-            <div>
-              <Label className="text-sm font-semibold">Target Amount (FCFA)</Label>
-              <Input type="number" placeholder="e.g. 500,000" value={targetAmount} onChange={(e) => setTargetAmount(e.target.value)} className="mt-1.5" />
-            </div>
+            {/* Step 2: Target Amount */}
+            {step === 2 && (
+              <div className="space-y-5 animate-fade-in">
+                <div className="text-center space-y-1">
+                  <Coins size={32} className="text-primary mx-auto" />
+                  <h2 className="text-base font-bold">Target Amount</h2>
+                  <p className="text-xs text-muted-foreground">How much do you want to save for "{goalName}"?</p>
+                </div>
+                <div>
+                  <Label className="text-sm font-semibold">Amount (FCFA)</Label>
+                  <Input
+                    type="number"
+                    placeholder="e.g. 500,000"
+                    value={targetAmount}
+                    onChange={(e) => setTargetAmount(e.target.value)}
+                    className="mt-1.5 h-12 text-base"
+                  />
+                </div>
+                <div
+                  onClick={openWhatsApp}
+                  className="flex items-center gap-3 bg-card border border-border rounded-xl p-3.5 cursor-pointer hover:border-primary/40 transition-colors"
+                >
+                  <div className="w-9 h-9 rounded-full bg-green-500/10 flex items-center justify-center shrink-0">
+                    <MessageCircle size={18} className="text-green-600" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold">Need help to budget?</p>
+                    <p className="text-xs text-muted-foreground">Chat with us on WhatsApp</p>
+                  </div>
+                  <ArrowRight size={16} className="text-muted-foreground ml-auto" />
+                </div>
+              </div>
+            )}
 
-            <div>
-              <Label className="text-sm font-semibold">Duration</Label>
-              <Input placeholder="e.g. 6 months" value={duration} onChange={(e) => setDuration(e.target.value)} className="mt-1.5" />
-            </div>
+            {/* Step 3: Saving Frequency & Amount */}
+            {step === 3 && (
+              <div className="space-y-5 animate-fade-in">
+                <div className="text-center space-y-1">
+                  <Calendar size={32} className="text-primary mx-auto" />
+                  <h2 className="text-base font-bold">Saving Plan</h2>
+                  <p className="text-xs text-muted-foreground">How often will you save?</p>
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-sm font-semibold">Saving Frequency</Label>
+                  <div className="grid grid-cols-3 gap-2">
+                    {SAVING_FREQUENCIES.map((f) => (
+                      <button
+                        key={f.value}
+                        onClick={() => {
+                          setFrequency(f.value);
+                          if (savingAmount && Number(savingAmount) < f.min) {
+                            setSavingAmount(String(f.min));
+                          }
+                        }}
+                        className={`p-3 rounded-xl border-2 text-center transition-all ${
+                          frequency === f.value
+                            ? "border-primary bg-primary/5"
+                            : "border-border bg-card hover:border-muted-foreground/30"
+                        }`}
+                      >
+                        <p className="text-sm font-bold">{f.label}</p>
+                        <p className="text-[10px] text-muted-foreground mt-0.5">Min: {f.min.toLocaleString()} FCFA</p>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <Label className="text-sm font-semibold">Saving Amount (FCFA)</Label>
+                  <Input
+                    type="number"
+                    placeholder={selectedFreq ? `Min ${selectedFreq.min.toLocaleString()} FCFA` : "Select frequency first"}
+                    value={savingAmount}
+                    onChange={(e) => setSavingAmount(e.target.value)}
+                    className="mt-1.5 h-12 text-base"
+                  />
+                  {selectedFreq && savingAmount && Number(savingAmount) < selectedFreq.min && (
+                    <p className="text-xs text-destructive mt-1">
+                      Minimum {selectedFreq.label.toLowerCase()} saving is {selectedFreq.min.toLocaleString()} FCFA
+                    </p>
+                  )}
+                </div>
+              </div>
+            )}
 
-            <div className="flex items-center justify-between bg-card border border-border rounded-xl p-3">
-              <Label className="text-sm font-semibold">Auto-deposit</Label>
-              <Switch checked={autoDeposit} onCheckedChange={setAutoDeposit} />
-            </div>
+            {/* Step 4: Duration & Auto-deposit */}
+            {step === 4 && (
+              <div className="space-y-5 animate-fade-in">
+                <div className="text-center space-y-1">
+                  <Target size={32} className="text-primary mx-auto" />
+                  <h2 className="text-base font-bold">Final Details</h2>
+                  <p className="text-xs text-muted-foreground">Set your timeline and preferences</p>
+                </div>
+                <div>
+                  <Label className="text-sm font-semibold">Duration</Label>
+                  <Input
+                    placeholder="e.g. 6 months"
+                    value={duration}
+                    onChange={(e) => setDuration(e.target.value)}
+                    className="mt-1.5 h-12 text-base"
+                  />
+                </div>
+                <div className="flex items-center justify-between bg-card border border-border rounded-xl p-4">
+                  <div>
+                    <Label className="text-sm font-semibold">Auto-deposit</Label>
+                    <p className="text-xs text-muted-foreground mt-0.5">Automatically save {frequency}</p>
+                  </div>
+                  <Switch checked={autoDeposit} onCheckedChange={setAutoDeposit} />
+                </div>
 
-            <div className="flex gap-3">
-              <Button variant="outline" onClick={() => setShowCreate(false)} className="flex-1 h-12 font-bold">Cancel</Button>
-              <Button onClick={handleCreate} className="flex-1 h-12 gradient-primary text-primary-foreground font-bold">Create Goal</Button>
+                {/* Summary */}
+                <div className="bg-muted/50 border border-border rounded-xl p-4 space-y-2">
+                  <p className="text-xs font-bold text-foreground">Summary</p>
+                  <div className="grid grid-cols-2 gap-y-1.5 text-xs">
+                    <span className="text-muted-foreground">Goal</span>
+                    <span className="font-semibold text-right">{goalName}</span>
+                    <span className="text-muted-foreground">Target</span>
+                    <span className="font-semibold text-right">{Number(targetAmount).toLocaleString()} FCFA</span>
+                    <span className="text-muted-foreground">Saving</span>
+                    <span className="font-semibold text-right">{Number(savingAmount).toLocaleString()} FCFA / {frequency}</span>
+                    <span className="text-muted-foreground">Duration</span>
+                    <span className="font-semibold text-right">{duration || "—"}</span>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Navigation buttons */}
+            <div className="flex gap-3 pt-2">
+              <Button
+                variant="outline"
+                onClick={() => step === 1 ? resetForm() : setStep(step - 1)}
+                className="flex-1 h-12 font-bold"
+              >
+                <ArrowLeft size={16} className="mr-1" />
+                {step === 1 ? "Cancel" : "Back"}
+              </Button>
+              {step < totalSteps ? (
+                <Button
+                  onClick={() => setStep(step + 1)}
+                  disabled={!canNext()}
+                  className="flex-1 h-12 gradient-primary text-primary-foreground font-bold"
+                >
+                  Next <ArrowRight size={16} className="ml-1" />
+                </Button>
+              ) : (
+                <Button
+                  onClick={handleCreate}
+                  disabled={!duration}
+                  className="flex-1 h-12 gradient-primary text-primary-foreground font-bold"
+                >
+                  Create Goal
+                </Button>
+              )}
             </div>
           </div>
         )}
