@@ -1,7 +1,19 @@
 import PageHeader from "@/components/PageHeader";
-import { User, Shield, Bell, LogOut } from "lucide-react";
+import { User, Shield, Bell, LogOut, Sun, Moon } from "lucide-react";
+import { useState, useEffect } from "react";
 
 const Profile = () => {
+  const [dark, setDark] = useState(() => document.documentElement.classList.contains("dark"));
+
+  useEffect(() => {
+    if (dark) {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+    localStorage.setItem("theme", dark ? "dark" : "light");
+  }, [dark]);
+
   return (
     <div className="min-h-screen bg-background pb-20">
       <div className="max-w-md mx-auto px-4 pt-6 animate-fade-in">
@@ -32,6 +44,15 @@ const Profile = () => {
               <span className="text-sm font-semibold">{item.label}</span>
             </button>
           ))}
+
+          {/* Dark mode toggle */}
+          <button
+            onClick={() => setDark(!dark)}
+            className="w-full flex items-center gap-3 bg-card border border-border rounded-xl p-4 hover:bg-muted transition-colors"
+          >
+            {dark ? <Sun size={18} className="text-warning" /> : <Moon size={18} className="text-primary" />}
+            <span className="text-sm font-semibold">{dark ? "Light Mode" : "Dark Mode"}</span>
+          </button>
 
           <button className="w-full flex items-center gap-3 bg-card border border-destructive/20 rounded-xl p-4 hover:bg-destructive/5 transition-colors mt-4">
             <LogOut size={18} className="text-destructive" />
