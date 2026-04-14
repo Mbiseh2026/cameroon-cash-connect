@@ -19,10 +19,6 @@ const BalanceCard = () => {
         {visible ? "0" : "••••••"}
         <span className="text-lg ml-1 font-semibold opacity-80">FCFA</span>
       </p>
-      <div className="mt-3 flex items-center gap-2 text-sm opacity-90">
-        <span>Goal-based saving:</span>
-        <span className="font-bold">200,000 FCFA →</span>
-      </div>
     </div>
   );
 };

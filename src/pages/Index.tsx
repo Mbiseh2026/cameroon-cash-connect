@@ -1,6 +1,7 @@
 import BalanceCard from "@/components/BalanceCard";
 import QuickActions from "@/components/QuickActions";
 import HomeExtras from "@/components/HomeExtras";
+import PromoCarousel from "@/components/PromoCarousel";
 import { Diamond } from "lucide-react";
 
 const Index = () => {
@@ -26,12 +27,10 @@ const Index = () => {
         {/* Balance */}
         <BalanceCard />
 
-        {/* Promo Slide */}
-        <div className="bg-card border border-border rounded-xl p-4">
-          <p className="text-sm font-bold text-foreground">Get the best out of Treasurit 🚀</p>
-          <p className="text-xs text-muted-foreground mt-1">
-            Save regularly, earn rewards, and access T-Funds — zero-interest loans for committed users.
-          </p>
+        {/* Promo Section */}
+        <div>
+          <p className="text-sm font-bold text-foreground mb-3">Get the best out of Treasurit 🚀</p>
+          <PromoCarousel />
         </div>
 
         {/* Quick Actions */}
