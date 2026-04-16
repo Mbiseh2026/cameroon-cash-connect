@@ -1,9 +1,10 @@
 import PageHeader from "@/components/PageHeader";
-import { User, Shield, Bell, LogOut, Sun, Moon } from "lucide-react";
+import { User, Shield, Bell, LogOut, Sun, Moon, Languages } from "lucide-react";
 import { useState, useEffect } from "react";
 
 const Profile = () => {
   const [dark, setDark] = useState(() => document.documentElement.classList.contains("dark"));
+  const [lang, setLang] = useState(() => localStorage.getItem("lang") || "en");
 
   useEffect(() => {
     if (dark) {
@@ -13,6 +14,12 @@ const Profile = () => {
     }
     localStorage.setItem("theme", dark ? "dark" : "light");
   }, [dark]);
+
+  const toggleLang = () => {
+    const next = lang === "en" ? "fr" : "en";
+    setLang(next);
+    localStorage.setItem("lang", next);
+  };
 
   return (
     <div className="min-h-screen bg-background pb-20">
@@ -52,6 +59,18 @@ const Profile = () => {
           >
             {dark ? <Sun size={18} className="text-warning" /> : <Moon size={18} className="text-primary" />}
             <span className="text-sm font-semibold">{dark ? "Light Mode" : "Dark Mode"}</span>
+          </button>
+
+          {/* Language toggle */}
+          <button
+            onClick={toggleLang}
+            className="w-full flex items-center gap-3 bg-card border border-border rounded-xl p-4 hover:bg-muted transition-colors"
+          >
+            <Languages size={18} className="text-primary" />
+            <span className="text-sm font-semibold">
+              {lang === "en" ? "Français" : "English"}
+            </span>
+            <span className="ml-auto text-xs text-muted-foreground font-bold uppercase">{lang}</span>
           </button>
 
           <button className="w-full flex items-center gap-3 bg-card border border-destructive/20 rounded-xl p-4 hover:bg-destructive/5 transition-colors mt-4">

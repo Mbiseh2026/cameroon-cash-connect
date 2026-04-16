@@ -4,9 +4,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Progress } from "@/components/ui/progress";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { toast } from "sonner";
-import { Plus, Target, ArrowRight, ArrowLeft, MessageCircle, Calendar, Coins, Users, Edit3 } from "lucide-react";
+import { Plus, Target, ArrowRight, ArrowLeft, MessageCircle, Calendar, Coins, Users, Edit3, AlertTriangle, CheckCircle2 } from "lucide-react";
 
 import goalTravel from "@/assets/goal-travel.png";
 import goalHouse from "@/assets/goal-house.png";
@@ -321,7 +321,30 @@ const GoalSavings = () => {
             )}
 
             {/* Step 4: Duration & Auto-deposit */}
-            {step === 4 && (
+            {step === 4 && (() => {
+              const parseDuration = (d: string) => {
+                const num = parseInt(d) || 0;
+                const lower = d.toLowerCase();
+                if (lower.includes("day")) return num;
+                if (lower.includes("week")) return num * 7;
+                if (lower.includes("month")) return num * 30;
+                if (lower.includes("year")) return num * 365;
+                return num * 30; // default to months
+              };
+
+              const freqPeriodsPerDay: Record<string, number> = { daily: 1, weekly: 1 / 7, monthly: 1 / 30 };
+              const freqLabel: Record<string, string> = { daily: "days", weekly: "weeks", monthly: "months" };
+
+              const totalDays = parseDuration(duration);
+              const periodsInDuration = frequency ? Math.floor(totalDays * (freqPeriodsPerDay[frequency] || 0)) : 0;
+              const totalSaved = periodsInDuration * (Number(savingAmount) || 0);
+              const target = Number(targetAmount) || 0;
+              const shortfall = target - totalSaved;
+              const meetsTarget = totalSaved >= target && target > 0;
+
+              const neededPeriods = (Number(savingAmount) || 0) > 0 ? Math.ceil(target / Number(savingAmount)) : 0;
+
+              return (
               <div className="space-y-5 animate-fade-in">
                 <div className="text-center space-y-1">
                   <Target size={32} className="text-primary mx-auto" />
@@ -329,7 +352,7 @@ const GoalSavings = () => {
                   <p className="text-xs text-muted-foreground">Set your timeline and preferences</p>
                 </div>
                 <div>
-                  <Label className="text-sm font-semibold">Duration</Label>
+                  <Label className="text-sm font-semibold">Duration (e.g. 6 months, 90 days)</Label>
                   <Input
                     placeholder="e.g. 6 months"
                     value={duration}
@@ -352,15 +375,55 @@ const GoalSavings = () => {
                     <span className="text-muted-foreground">Goal</span>
                     <span className="font-semibold text-right">{displayGoalName}</span>
                     <span className="text-muted-foreground">Target</span>
-                    <span className="font-semibold text-right">{Number(targetAmount).toLocaleString()} FCFA</span>
+                    <span className="font-semibold text-right">{target.toLocaleString()} FCFA</span>
                     <span className="text-muted-foreground">Saving</span>
                     <span className="font-semibold text-right">{Number(savingAmount).toLocaleString()} FCFA / {frequency}</span>
                     <span className="text-muted-foreground">Duration</span>
                     <span className="font-semibold text-right">{duration || "—"}</span>
+                    {duration && (
+                      <>
+                        <span className="text-muted-foreground">Total savings</span>
+                        <span className={`font-semibold text-right ${meetsTarget ? "text-green-600" : "text-destructive"}`}>
+                          {totalSaved.toLocaleString()} FCFA
+                        </span>
+                      </>
+                    )}
                   </div>
                 </div>
+
+                {/* Target analysis */}
+                {duration && target > 0 && Number(savingAmount) > 0 && (
+                  <>
+                    {meetsTarget ? (
+                      <div className="flex items-start gap-3 bg-green-500/10 border border-green-500/20 rounded-xl p-3.5">
+                        <CheckCircle2 size={18} className="text-green-600 shrink-0 mt-0.5" />
+                        <div className="text-xs">
+                          <p className="font-bold text-green-700 dark:text-green-400">On track! 🎉</p>
+                          <p className="text-muted-foreground mt-0.5">
+                            Saving {Number(savingAmount).toLocaleString()} FCFA {frequency} for {duration} will reach your target.
+                          </p>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="flex items-start gap-3 bg-destructive/10 border border-destructive/20 rounded-xl p-3.5">
+                        <AlertTriangle size={18} className="text-destructive shrink-0 mt-0.5" />
+                        <div className="text-xs space-y-1.5">
+                          <p className="font-bold text-destructive">Shortfall of {shortfall.toLocaleString()} FCFA</p>
+                          <p className="text-muted-foreground">
+                            At {Number(savingAmount).toLocaleString()} FCFA / {frequency} for {duration}, you'll only save {totalSaved.toLocaleString()} FCFA — which is below your {target.toLocaleString()} FCFA target.
+                          </p>
+                          <p className="text-foreground font-semibold">
+                            💡 You need <span className="text-primary">{neededPeriods} {freqLabel[frequency] || "periods"}</span> at {Number(savingAmount).toLocaleString()} FCFA/{frequency} to reach your goal.
+                          </p>
+                          <p className="text-muted-foreground">You can still create this goal and adjust later.</p>
+                        </div>
+                      </div>
+                    )}
+                  </>
+                )}
               </div>
-            )}
+              );
+            })()}
 
             {/* Navigation buttons */}
             <div className="flex gap-3 pt-2">
