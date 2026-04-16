@@ -6,7 +6,17 @@ import { Switch } from "@/components/ui/switch";
 import { Progress } from "@/components/ui/progress";
 import { useState } from "react";
 import { toast } from "sonner";
-import { Plus, Target, ArrowRight, ArrowLeft, MessageCircle, Calendar, Coins } from "lucide-react";
+import { Plus, Target, ArrowRight, ArrowLeft, MessageCircle, Calendar, Coins, Users, Edit3 } from "lucide-react";
+
+import goalTravel from "@/assets/goal-travel.png";
+import goalHouse from "@/assets/goal-house.png";
+import goalBusiness from "@/assets/goal-business.png";
+import goalLand from "@/assets/goal-land.png";
+import goalCar from "@/assets/goal-car.png";
+import goalSchool from "@/assets/goal-school.png";
+import goalCelebration from "@/assets/goal-celebration.png";
+import goalTuition from "@/assets/goal-tuition.png";
+import goalSkill from "@/assets/goal-skill.png";
 
 interface Goal {
   id: string;
@@ -17,9 +27,17 @@ interface Goal {
   autoDeposit: boolean;
 }
 
-const GOAL_OPTIONS = [
-  "Start a business", "Travel", "Buy a land", "Build a house",
-  "Buy a car/bike", "Back to school", "Celebrations", "Other",
+const GOAL_OPTIONS: { label: string; image: string }[] = [
+  { label: "Start a business", image: goalBusiness },
+  { label: "Travel", image: goalTravel },
+  { label: "Buy a land", image: goalLand },
+  { label: "Build a house", image: goalHouse },
+  { label: "Buy a car/bike", image: goalCar },
+  { label: "Back to school", image: goalSchool },
+  { label: "Tuition fees", image: goalTuition },
+  { label: "Learn a skill/trade", image: goalSkill },
+  { label: "Celebrations", image: goalCelebration },
+  { label: "Other", image: "" },
 ];
 
 const SAVING_FREQUENCIES = [
@@ -28,14 +46,27 @@ const SAVING_FREQUENCIES = [
   { label: "Monthly", value: "monthly", min: 5000 },
 ];
 
+const COMMUNITY_GOALS = [
+  { goal: "Travel", count: 48 },
+  { goal: "Start a business", count: 35 },
+  { goal: "Build a house", count: 29 },
+  { goal: "Tuition fees", count: 24 },
+  { goal: "Buy a car/bike", count: 18 },
+  { goal: "Learn a skill/trade", count: 15 },
+  { goal: "Buy a land", count: 12 },
+  { goal: "Celebrations", count: 8 },
+];
+
 const GoalSavings = () => {
   const [goals] = useState<Goal[]>([
     { id: "1", name: "Buy a Land", target: 200000, saved: 75000, duration: "6 months", autoDeposit: true },
     { id: "2", name: "Start a Business", target: 500000, saved: 120000, duration: "12 months", autoDeposit: false },
   ]);
   const [showCreate, setShowCreate] = useState(false);
+  const [showCommunity, setShowCommunity] = useState(false);
   const [step, setStep] = useState(1);
   const [goalName, setGoalName] = useState("");
+  const [customGoalName, setCustomGoalName] = useState("");
   const [targetAmount, setTargetAmount] = useState("");
   const [duration, setDuration] = useState("");
   const [frequency, setFrequency] = useState("");
@@ -47,6 +78,7 @@ const GoalSavings = () => {
   const resetForm = () => {
     setStep(1);
     setGoalName("");
+    setCustomGoalName("");
     setTargetAmount("");
     setDuration("");
     setFrequency("");
@@ -55,13 +87,18 @@ const GoalSavings = () => {
     setShowCreate(false);
   };
 
+  const displayGoalName = goalName === "Other" ? customGoalName : goalName;
+
   const handleCreate = () => {
-    toast.success(`Goal "${goalName}" created!`);
+    toast.success(`Goal "${displayGoalName}" created!`);
     resetForm();
   };
 
   const canNext = () => {
-    if (step === 1) return !!goalName;
+    if (step === 1) {
+      if (goalName === "Other") return !!customGoalName.trim();
+      return !!goalName;
+    }
     if (step === 2) return !!targetAmount;
     if (step === 3) return !!frequency && !!savingAmount;
     return !!duration;
@@ -113,6 +150,29 @@ const GoalSavings = () => {
             <Button onClick={() => { setShowCreate(true); setStep(1); }} className="w-full h-12 gradient-primary text-primary-foreground font-bold">
               <Plus size={18} className="mr-2" /> Create Savings Goal
             </Button>
+
+            {/* See Other Goals */}
+            <button
+              onClick={() => setShowCommunity(!showCommunity)}
+              className="w-full flex items-center justify-center gap-2 text-sm font-semibold text-primary py-2 hover:underline"
+            >
+              <Users size={16} /> See what others are saving for
+            </button>
+
+            {showCommunity && (
+              <div className="bg-card border border-border rounded-xl p-4 space-y-3 animate-fade-in">
+                <p className="text-xs font-bold text-foreground">🔥 Popular Goals in the Community</p>
+                <div className="space-y-2">
+                  {COMMUNITY_GOALS.map((item) => (
+                    <div key={item.goal} className="flex items-center justify-between text-xs">
+                      <span className="text-muted-foreground">{item.goal}</span>
+                      <span className="font-bold text-primary">{item.count} savers</span>
+                    </div>
+                  ))}
+                </div>
+                <p className="text-[10px] text-muted-foreground text-center pt-1">Names are never shared — only goals.</p>
+              </div>
+            )}
           </div>
         ) : (
           <div className="space-y-6">
@@ -139,18 +199,40 @@ const GoalSavings = () => {
                 <div className="grid grid-cols-2 gap-2.5">
                   {GOAL_OPTIONS.map((opt) => (
                     <button
-                      key={opt}
-                      onClick={() => setGoalName(opt)}
-                      className={`text-sm font-semibold p-3.5 rounded-xl border-2 transition-all ${
-                        goalName === opt
+                      key={opt.label}
+                      onClick={() => {
+                        setGoalName(opt.label);
+                        if (opt.label !== "Other") setCustomGoalName("");
+                      }}
+                      className={`flex flex-col items-center gap-1.5 text-xs font-semibold p-3 rounded-xl border-2 transition-all ${
+                        goalName === opt.label
                           ? "border-primary bg-primary/5 text-primary"
                           : "border-border bg-card text-foreground hover:border-muted-foreground/30"
                       }`}
                     >
-                      {opt}
+                      {opt.image ? (
+                        <img src={opt.image} alt={opt.label} width={40} height={40} className="object-contain" loading="lazy" />
+                      ) : (
+                        <Edit3 size={24} className="text-muted-foreground" />
+                      )}
+                      <span>{opt.label}</span>
                     </button>
                   ))}
                 </div>
+
+                {/* Custom goal input when "Other" is selected */}
+                {goalName === "Other" && (
+                  <div className="animate-fade-in">
+                    <Label className="text-sm font-semibold">Describe your goal</Label>
+                    <Input
+                      placeholder="e.g. Buy new equipment"
+                      value={customGoalName}
+                      onChange={(e) => setCustomGoalName(e.target.value)}
+                      className="mt-1.5 h-12 text-base"
+                      autoFocus
+                    />
+                  </div>
+                )}
               </div>
             )}
 
@@ -160,7 +242,7 @@ const GoalSavings = () => {
                 <div className="text-center space-y-1">
                   <Coins size={32} className="text-primary mx-auto" />
                   <h2 className="text-base font-bold">Target Amount</h2>
-                  <p className="text-xs text-muted-foreground">How much do you want to save for "{goalName}"?</p>
+                  <p className="text-xs text-muted-foreground">How much do you want to save for "{displayGoalName}"?</p>
                 </div>
                 <div>
                   <Label className="text-sm font-semibold">Amount (FCFA)</Label>
@@ -268,7 +350,7 @@ const GoalSavings = () => {
                   <p className="text-xs font-bold text-foreground">Summary</p>
                   <div className="grid grid-cols-2 gap-y-1.5 text-xs">
                     <span className="text-muted-foreground">Goal</span>
-                    <span className="font-semibold text-right">{goalName}</span>
+                    <span className="font-semibold text-right">{displayGoalName}</span>
                     <span className="text-muted-foreground">Target</span>
                     <span className="font-semibold text-right">{Number(targetAmount).toLocaleString()} FCFA</span>
                     <span className="text-muted-foreground">Saving</span>
