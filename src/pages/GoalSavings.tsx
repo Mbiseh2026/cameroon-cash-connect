@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Progress } from "@/components/ui/progress";
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 import { Plus, Target, ArrowRight, ArrowLeft, MessageCircle, Calendar, Coins, Users, Edit3, AlertTriangle, CheckCircle2 } from "lucide-react";
 
