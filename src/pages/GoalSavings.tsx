@@ -106,8 +106,10 @@ const GoalSavings = () => {
   const displayGoalName = goalName === "Other" ? customGoalName : goalName;
 
   const handleCreate = () => {
-    toast.success(`Goal "${displayGoalName}" created!`);
+    const name = displayGoalName;
+    toast.success(`Goal "${name}" created!`);
     resetForm();
+    setPostCreateGoal(name);
   };
 
   const canNext = () => {
