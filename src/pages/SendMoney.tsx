@@ -7,30 +7,36 @@ import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Phone } from "lucide-react";
 
-const methods = [
+type Method = "treasurit" | "mtn" | "orange";
+
+const methods: { key: Method; label: string }[] = [
   { key: "treasurit", label: "Treasurit User" },
   { key: "mtn", label: "MTN MoMo" },
   { key: "orange", label: "Orange Money" },
 ];
 
 const SendMoney = () => {
-  const [method, setMethod] = useState("treasurit");
+  const [method, setMethod] = useState<Method>("treasurit");
   const [recipient, setRecipient] = useState("");
+  const [recipientName, setRecipientName] = useState("");
   const [amount, setAmount] = useState("");
   const [reason, setReason] = useState("");
   const [pin, setPin] = useState("");
 
   const [phoneDialog, setPhoneDialog] = useState<null | "mtn" | "orange">(null);
   const [phoneInput, setPhoneInput] = useState("");
+  const [nameInput, setNameInput] = useState("");
 
-  const selectMethod = (key: string) => {
+  const selectMethod = (key: Method) => {
     if (key === "mtn" || key === "orange") {
       setPhoneInput(method === key ? recipient : "");
+      setNameInput(method === key ? recipientName : "");
       setPhoneDialog(key);
       return;
     }
     setMethod(key);
     setRecipient("");
+    setRecipientName("");
   };
 
   const confirmPhone = () => {
@@ -39,10 +45,14 @@ const SendMoney = () => {
       toast.error("Enter a valid 9-digit phone number");
       return;
     }
+    if (!nameInput.trim()) {
+      toast.error("Enter the recipient's name");
+      return;
+    }
     setMethod(phoneDialog!);
     setRecipient(cleaned);
+    setRecipientName(nameInput.trim());
     setPhoneDialog(null);
-    setPhoneInput("");
   };
 
   const handleSend = () => {
@@ -58,16 +68,14 @@ const SendMoney = () => {
       toast.error("Enter your 4-digit PIN");
       return;
     }
-    toast.success(`${Number(amount).toLocaleString()} FCFA sent to ${recipient}`);
+    const target = recipientName ? `${recipientName} (+237 ${recipient})` : recipient;
+    toast.success(`${Number(amount).toLocaleString()} FCFA sent to ${target}`);
     setRecipient("");
+    setRecipientName("");
     setAmount("");
     setReason("");
     setPin("");
   };
-
-  const recipientLabel =
-    method === "treasurit" ? "Name or Phone" :
-    method === "mtn" ? "MTN MoMo Number" : "Orange Money Number";
 
   return (
     <div className="min-h-screen bg-background pb-20">
@@ -78,29 +86,42 @@ const SendMoney = () => {
           <div>
             <Label className="text-sm font-semibold mb-2 block">How do you want to send?</Label>
             <div className="grid grid-cols-3 gap-2">
-              {methods.map((m) => (
-                <button
-                  key={m.key}
-                  onClick={() => selectMethod(m.key)}
-                  className={`text-xs font-semibold p-3 rounded-xl border transition-all ${
-                    method === m.key ? "border-primary bg-primary/5" : "border-border bg-card"
-                  }`}
-                >
-                  {m.label}
-                </button>
-              ))}
+              {methods.map((m) => {
+                const active = method === m.key;
+                return (
+                  <button
+                    key={m.key}
+                    onClick={() => selectMethod(m.key)}
+                    className={`text-xs font-semibold p-3 rounded-xl border transition-all ${
+                      active ? "border-primary bg-primary/5" : "border-border bg-card"
+                    }`}
+                  >
+                    {m.label}
+                  </button>
+                );
+              })}
             </div>
+            {(method === "mtn" || method === "orange") && recipient && (
+              <p className="text-xs text-muted-foreground mt-2">
+                Recipient: <span className="font-semibold text-foreground">{recipientName}</span> · +237 {recipient}
+              </p>
+            )}
           </div>
 
-          <div>
-            <Label className="text-sm font-semibold">{recipientLabel}</Label>
-            <Input
-              placeholder={method === "treasurit" ? "Search contact..." : "e.g. 6XX XXX XXX"}
-              value={recipient}
-              onChange={(e) => setRecipient(e.target.value)}
-              className="mt-1.5"
-            />
-          </div>
+          {method === "treasurit" && (
+            <div>
+              <Label className="text-sm font-semibold">Treasurit account</Label>
+              <Input
+                placeholder="Search by name, @username or phone"
+                value={recipient}
+                onChange={(e) => setRecipient(e.target.value)}
+                className="mt-1.5"
+              />
+              <p className="text-xs text-muted-foreground mt-1">
+                Tip: names aren't unique — use a username or phone for accuracy.
+              </p>
+            </div>
+          )}
 
           <div>
             <Label className="text-sm font-semibold">Amount (FCFA)</Label>
@@ -123,33 +144,45 @@ const SendMoney = () => {
         </div>
       </div>
 
-      {/* Phone number dialog for MoMo / Orange */}
-      <Dialog open={!!phoneDialog} onOpenChange={(o) => { if (!o) { setPhoneDialog(null); setPhoneInput(""); } }}>
+      <Dialog open={!!phoneDialog} onOpenChange={(o) => { if (!o) setPhoneDialog(null); }}>
         <DialogContent className="max-w-sm">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Phone size={18} className="text-primary" />
-              {phoneDialog === "mtn" ? "MTN MoMo Number" : "Orange Money Number"}
+              {phoneDialog === "mtn" ? "MTN MoMo Recipient" : "Orange Money Recipient"}
             </DialogTitle>
-            <DialogDescription>
-              Enter the recipient's 9-digit phone number.
-            </DialogDescription>
+            <DialogDescription>Enter the recipient's phone number and name.</DialogDescription>
           </DialogHeader>
-          <div className="flex items-center gap-2">
-            <span className="text-sm font-semibold text-muted-foreground">+237</span>
-            <Input
-              type="tel"
-              inputMode="numeric"
-              maxLength={9}
-              placeholder="6XX XXX XXX"
-              value={phoneInput}
-              onChange={(e) => setPhoneInput(e.target.value.replace(/\D/g, ""))}
-              className="h-12 text-base font-semibold tracking-wider"
-              autoFocus
-            />
+          <div className="space-y-3">
+            <div>
+              <Label className="text-xs font-semibold">Phone number</Label>
+              <div className="flex items-center gap-2 mt-1">
+                <span className="text-sm font-semibold text-muted-foreground">+237</span>
+                <Input
+                  type="tel"
+                  inputMode="numeric"
+                  maxLength={9}
+                  placeholder="6XX XXX XXX"
+                  value={phoneInput}
+                  onChange={(e) => setPhoneInput(e.target.value.replace(/\D/g, ""))}
+                  className="h-12 text-base font-semibold tracking-wider"
+                  autoFocus
+                />
+              </div>
+            </div>
+            <div>
+              <Label className="text-xs font-semibold">Recipient name</Label>
+              <Input
+                placeholder="Full name on the account"
+                value={nameInput}
+                onChange={(e) => setNameInput(e.target.value)}
+                className="mt-1 h-11"
+                maxLength={80}
+              />
+            </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => { setPhoneDialog(null); setPhoneInput(""); }}>Cancel</Button>
+            <Button variant="outline" onClick={() => setPhoneDialog(null)}>Cancel</Button>
             <Button onClick={confirmPhone} className="gradient-primary text-primary-foreground">Continue</Button>
           </DialogFooter>
         </DialogContent>
