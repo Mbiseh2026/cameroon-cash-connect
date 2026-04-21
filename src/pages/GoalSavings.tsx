@@ -132,7 +132,11 @@ const GoalSavings = () => {
             {goals.map((goal) => {
               const pct = Math.round((goal.saved / goal.target) * 100);
               return (
-                <div key={goal.id} className="bg-card border border-border rounded-xl p-4 space-y-3">
+                <button
+                  key={goal.id}
+                  onClick={() => setSelectedGoal(goal)}
+                  className="w-full text-left bg-card border border-border rounded-xl p-4 space-y-3 hover:border-primary/40 transition-colors"
+                >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <Target size={18} className="text-primary" />
@@ -155,7 +159,7 @@ const GoalSavings = () => {
                       <span className="bg-success/10 text-success px-2 py-0.5 rounded-full text-[10px] font-bold">Auto</span>
                     )}
                   </div>
-                </div>
+                </button>
               );
             })}
 
