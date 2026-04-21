@@ -66,14 +66,18 @@ const COMMUNITY_GOALS = [
 
 const GoalSavings = () => {
   const [goals] = useState<Goal[]>([
-    { id: "1", name: "Buy a Land", target: 200000, saved: 75000, duration: "6 months", autoDeposit: true },
-    { id: "2", name: "Start a Business", target: 500000, saved: 120000, duration: "12 months", autoDeposit: false },
+    { id: "1", name: "Buy a Land", target: 200000, saved: 75000, duration: "6 months", autoDeposit: true, frequency: "monthly", savingAmount: 35000, description: "Plot in Yaoundé suburbs" },
+    { id: "2", name: "Start a Business", target: 500000, saved: 120000, duration: "12 months", autoDeposit: false, frequency: "monthly", savingAmount: 40000 },
   ]);
+  const navigate = useNavigate();
   const [showCreate, setShowCreate] = useState(false);
   const [showCommunity, setShowCommunity] = useState(false);
+  const [selectedGoal, setSelectedGoal] = useState<Goal | null>(null);
   const [step, setStep] = useState(1);
   const [goalName, setGoalName] = useState("");
   const [customGoalName, setCustomGoalName] = useState("");
+  const [description, setDescription] = useState("");
+  const [descPopoverOpen, setDescPopoverOpen] = useState(false);
   const [targetAmount, setTargetAmount] = useState("");
   const [duration, setDuration] = useState("");
   const [frequency, setFrequency] = useState("");
@@ -86,6 +90,7 @@ const GoalSavings = () => {
     setStep(1);
     setGoalName("");
     setCustomGoalName("");
+    setDescription("");
     setTargetAmount("");
     setDuration("");
     setFrequency("");
