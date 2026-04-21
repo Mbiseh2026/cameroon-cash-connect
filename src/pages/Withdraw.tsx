@@ -7,7 +7,7 @@ import { toast } from "sonner";
 
 const Withdraw = () => {
   const [amount, setAmount] = useState("");
-  const [method, setMethod] = useState<"mtn" | "orange" | "bank">("mtn");
+  const [method, setMethod] = useState<"mtn" | "orange" | "treasurit">("mtn");
   const [pin, setPin] = useState("");
 
   const handleWithdraw = () => {
@@ -43,7 +43,7 @@ const Withdraw = () => {
               {[
                 { key: "mtn" as const, label: "MTN Mobile Money" },
                 { key: "orange" as const, label: "Orange Money" },
-                { key: "bank" as const, label: "Bank Transfer" },
+                { key: "treasurit" as const, label: "Treasurit User" },
               ].map((m) => (
                 <button
                   key={m.key}
