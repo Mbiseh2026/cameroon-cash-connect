@@ -7,7 +7,7 @@ import { toast } from "sonner";
 
 const Withdraw = () => {
   const [amount, setAmount] = useState("");
-  const [method, setMethod] = useState<"mtn" | "orange" | "bank">("mtn");
+  const [method, setMethod] = useState<"mtn" | "orange" | "treasurit">("mtn");
   const [pin, setPin] = useState("");
 
   const handleWithdraw = () => {
