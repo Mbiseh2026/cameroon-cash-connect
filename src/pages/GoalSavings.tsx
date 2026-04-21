@@ -249,6 +249,37 @@ const GoalSavings = () => {
                     />
                   </div>
                 )}
+
+                {/* Optional description popover */}
+                {goalName && (
+                  <Popover open={descPopoverOpen} onOpenChange={setDescPopoverOpen}>
+                    <PopoverTrigger asChild>
+                      <button className="w-full flex items-center justify-center gap-2 text-xs font-semibold text-primary py-2 hover:underline animate-fade-in">
+                        <Edit3 size={14} />
+                        {description ? "Edit description" : "Add a short description (optional)"}
+                      </button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-80 p-3 space-y-2" align="center">
+                      <Label className="text-xs font-semibold">Describe your goal in summary</Label>
+                      <Textarea
+                        placeholder="e.g. Save for a small plot in Douala by end of year."
+                        value={description}
+                        onChange={(e) => setDescription(e.target.value)}
+                        rows={3}
+                        className="text-sm resize-none"
+                      />
+                      <div className="flex justify-end gap-2">
+                        <Button size="sm" variant="ghost" onClick={() => { setDescription(""); setDescPopoverOpen(false); }}>
+                          Clear
+                        </Button>
+                        <Button size="sm" onClick={() => setDescPopoverOpen(false)}>
+                          Save
+                        </Button>
+                      </div>
+                      <p className="text-[10px] text-muted-foreground">Optional — helps you remember the why.</p>
+                    </PopoverContent>
+                  </Popover>
+                )}
               </div>
             )}
 
