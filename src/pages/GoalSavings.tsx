@@ -8,7 +8,8 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { Plus, Target, ArrowRight, ArrowLeft, MessageCircle, Calendar, Coins, Users, Edit3, AlertTriangle, CheckCircle2, Wallet, ArrowDownToLine, ArrowUpFromLine } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import { Lock } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { useNavigate } from "react-router-dom";
 
