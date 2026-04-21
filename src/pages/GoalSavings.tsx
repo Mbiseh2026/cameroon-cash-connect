@@ -603,6 +603,72 @@ const GoalSavings = () => {
           })()}
         </DialogContent>
       </Dialog>
+
+      {/* PIN gate before viewing goal summary */}
+      <Dialog open={!!pinPromptGoal} onOpenChange={(o) => { if (!o) { setPinPromptGoal(null); setPinValue(""); } }}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Lock size={18} className="text-primary" /> Enter PIN
+            </DialogTitle>
+            <DialogDescription>
+              For your security, enter your 4-digit PIN to view this goal's summary.
+            </DialogDescription>
+          </DialogHeader>
+          <Input
+            type="password"
+            inputMode="numeric"
+            maxLength={4}
+            placeholder="••••"
+            value={pinValue}
+            onChange={(e) => setPinValue(e.target.value.replace(/\D/g, ""))}
+            className="text-center text-xl tracking-[1em] h-12"
+            autoFocus
+          />
+          <DialogFooter>
+            <Button variant="outline" onClick={() => { setPinPromptGoal(null); setPinValue(""); }}>Cancel</Button>
+            <Button
+              onClick={() => {
+                if (pinValue.length !== 4) {
+                  toast.error("Enter your 4-digit PIN");
+                  return;
+                }
+                setSelectedGoal(pinPromptGoal);
+                setPinPromptGoal(null);
+                setPinValue("");
+              }}
+              className="gradient-primary text-primary-foreground"
+            >
+              Unlock
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Post-create: prompt for first deposit */}
+      <Dialog open={!!postCreateGoal} onOpenChange={(o) => !o && setPostCreateGoal(null)}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <CheckCircle2 size={18} className="text-green-600" /> Goal Created!
+            </DialogTitle>
+            <DialogDescription>
+              Would you like to make your first deposit to <span className="font-semibold text-foreground">"{postCreateGoal}"</span> now, or do it later?
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2 sm:gap-2">
+            <Button variant="outline" onClick={() => setPostCreateGoal(null)} className="flex-1">
+              Later
+            </Button>
+            <Button
+              onClick={() => { setPostCreateGoal(null); navigate("/deposit"); }}
+              className="flex-1 gradient-primary text-primary-foreground"
+            >
+              <ArrowDownToLine size={16} className="mr-1" /> Deposit Now
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
