@@ -503,6 +503,100 @@ const GoalSavings = () => {
           </div>
         )}
       </div>
+
+      {/* Goal summary dialog */}
+      <Dialog open={!!selectedGoal} onOpenChange={(o) => !o && setSelectedGoal(null)}>
+        <DialogContent className="max-w-md p-0 overflow-hidden">
+          {selectedGoal && (() => {
+            const pct = Math.round((selectedGoal.saved / selectedGoal.target) * 100);
+            const remaining = selectedGoal.target - selectedGoal.saved;
+            return (
+              <div className="flex flex-col">
+                {/* Top: balance + actions */}
+                <div className="gradient-primary text-primary-foreground p-5 space-y-4">
+                  <div>
+                    <p className="text-xs opacity-80 font-medium">Goal Balance</p>
+                    <p className="text-2xl font-bold tracking-tight">
+                      {selectedGoal.saved.toLocaleString()}
+                      <span className="text-sm ml-1 font-semibold opacity-80">FCFA</span>
+                    </p>
+                  </div>
+                  <div className="grid grid-cols-3 gap-2">
+                    <button
+                      onClick={() => { setSelectedGoal(null); navigate("/deposit"); }}
+                      className="flex flex-col items-center gap-1 bg-primary-foreground/15 hover:bg-primary-foreground/25 rounded-xl py-2.5 transition-colors"
+                    >
+                      <ArrowDownToLine size={18} />
+                      <span className="text-[11px] font-semibold">Deposit</span>
+                    </button>
+                    <button
+                      onClick={() => { setSelectedGoal(null); navigate("/withdraw"); }}
+                      className="flex flex-col items-center gap-1 bg-primary-foreground/15 hover:bg-primary-foreground/25 rounded-xl py-2.5 transition-colors"
+                    >
+                      <ArrowUpFromLine size={18} />
+                      <span className="text-[11px] font-semibold">Withdraw</span>
+                    </button>
+                    <div className="flex flex-col items-center gap-1 bg-primary-foreground/15 rounded-xl py-2.5">
+                      <Wallet size={18} />
+                      <span className="text-[11px] font-semibold">Balance</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Summary body */}
+                <div className="p-5 space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Target size={18} className="text-primary" />
+                      <h3 className="font-bold text-base">{selectedGoal.name}</h3>
+                    </div>
+                    {selectedGoal.autoDeposit && (
+                      <span className="bg-success/10 text-success px-2 py-0.5 rounded-full text-[10px] font-bold">Auto</span>
+                    )}
+                  </div>
+
+                  <Progress value={pct} className="h-2" />
+                  <div className="flex justify-between text-xs">
+                    <span className="text-muted-foreground">{selectedGoal.saved.toLocaleString()} / {selectedGoal.target.toLocaleString()} FCFA</span>
+                    <span className="font-bold text-primary">{pct}%</span>
+                  </div>
+
+                  <div className="bg-muted/50 border border-border rounded-xl p-3 space-y-1.5 text-xs">
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Target</span>
+                      <span className="font-semibold">{selectedGoal.target.toLocaleString()} FCFA</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Remaining</span>
+                      <span className="font-semibold">{remaining.toLocaleString()} FCFA</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Duration</span>
+                      <span className="font-semibold">{selectedGoal.duration}</span>
+                    </div>
+                    {selectedGoal.frequency && selectedGoal.savingAmount && (
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Saving plan</span>
+                        <span className="font-semibold">{selectedGoal.savingAmount.toLocaleString()} FCFA / {selectedGoal.frequency}</span>
+                      </div>
+                    )}
+                    {selectedGoal.description && (
+                      <div className="pt-1.5 border-t border-border">
+                        <p className="text-muted-foreground mb-0.5">Description</p>
+                        <p className="text-foreground">{selectedGoal.description}</p>
+                      </div>
+                    )}
+                  </div>
+
+                  <p className="text-[10px] text-muted-foreground text-center">
+                    Goal balance is locked and not shown on your home screen.
+                  </p>
+                </div>
+              </div>
+            );
+          })()}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
