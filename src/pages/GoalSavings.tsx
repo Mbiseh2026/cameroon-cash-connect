@@ -140,7 +140,7 @@ const GoalSavings = () => {
               return (
                 <button
                   key={goal.id}
-                  onClick={() => setSelectedGoal(goal)}
+                  onClick={() => { setPinValue(""); setPinPromptGoal(goal); }}
                   className="w-full text-left bg-card border border-border rounded-xl p-4 space-y-3 hover:border-primary/40 transition-colors"
                 >
                   <div className="flex items-center justify-between">
