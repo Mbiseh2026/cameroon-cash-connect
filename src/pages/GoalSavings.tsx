@@ -6,7 +6,11 @@ import { Switch } from "@/components/ui/switch";
 import { Progress } from "@/components/ui/progress";
 import { useState } from "react";
 import { toast } from "sonner";
-import { Plus, Target, ArrowRight, ArrowLeft, MessageCircle, Calendar, Coins, Users, Edit3, AlertTriangle, CheckCircle2 } from "lucide-react";
+import { Plus, Target, ArrowRight, ArrowLeft, MessageCircle, Calendar, Coins, Users, Edit3, AlertTriangle, CheckCircle2, Wallet, ArrowDownToLine, ArrowUpFromLine } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
+import { useNavigate } from "react-router-dom";
 
 import goalTravel from "@/assets/goal-travel.png";
 import goalHouse from "@/assets/goal-house.png";
@@ -25,6 +29,9 @@ interface Goal {
   saved: number;
   duration: string;
   autoDeposit: boolean;
+  description?: string;
+  frequency?: string;
+  savingAmount?: number;
 }
 
 const GOAL_OPTIONS: { label: string; image: string }[] = [
@@ -59,14 +66,18 @@ const COMMUNITY_GOALS = [
 
 const GoalSavings = () => {
   const [goals] = useState<Goal[]>([
-    { id: "1", name: "Buy a Land", target: 200000, saved: 75000, duration: "6 months", autoDeposit: true },
-    { id: "2", name: "Start a Business", target: 500000, saved: 120000, duration: "12 months", autoDeposit: false },
+    { id: "1", name: "Buy a Land", target: 200000, saved: 75000, duration: "6 months", autoDeposit: true, frequency: "monthly", savingAmount: 35000, description: "Plot in Yaoundé suburbs" },
+    { id: "2", name: "Start a Business", target: 500000, saved: 120000, duration: "12 months", autoDeposit: false, frequency: "monthly", savingAmount: 40000 },
   ]);
+  const navigate = useNavigate();
   const [showCreate, setShowCreate] = useState(false);
   const [showCommunity, setShowCommunity] = useState(false);
+  const [selectedGoal, setSelectedGoal] = useState<Goal | null>(null);
   const [step, setStep] = useState(1);
   const [goalName, setGoalName] = useState("");
   const [customGoalName, setCustomGoalName] = useState("");
+  const [description, setDescription] = useState("");
+  const [descPopoverOpen, setDescPopoverOpen] = useState(false);
   const [targetAmount, setTargetAmount] = useState("");
   const [duration, setDuration] = useState("");
   const [frequency, setFrequency] = useState("");
@@ -79,6 +90,7 @@ const GoalSavings = () => {
     setStep(1);
     setGoalName("");
     setCustomGoalName("");
+    setDescription("");
     setTargetAmount("");
     setDuration("");
     setFrequency("");
@@ -120,7 +132,11 @@ const GoalSavings = () => {
             {goals.map((goal) => {
               const pct = Math.round((goal.saved / goal.target) * 100);
               return (
-                <div key={goal.id} className="bg-card border border-border rounded-xl p-4 space-y-3">
+                <button
+                  key={goal.id}
+                  onClick={() => setSelectedGoal(goal)}
+                  className="w-full text-left bg-card border border-border rounded-xl p-4 space-y-3 hover:border-primary/40 transition-colors"
+                >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <Target size={18} className="text-primary" />
@@ -143,7 +159,7 @@ const GoalSavings = () => {
                       <span className="bg-success/10 text-success px-2 py-0.5 rounded-full text-[10px] font-bold">Auto</span>
                     )}
                   </div>
-                </div>
+                </button>
               );
             })}
 
@@ -232,6 +248,37 @@ const GoalSavings = () => {
                       autoFocus
                     />
                   </div>
+                )}
+
+                {/* Optional description popover */}
+                {goalName && (
+                  <Popover open={descPopoverOpen} onOpenChange={setDescPopoverOpen}>
+                    <PopoverTrigger asChild>
+                      <button className="w-full flex items-center justify-center gap-2 text-xs font-semibold text-primary py-2 hover:underline animate-fade-in">
+                        <Edit3 size={14} />
+                        {description ? "Edit description" : "Add a short description (optional)"}
+                      </button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-80 p-3 space-y-2" align="center">
+                      <Label className="text-xs font-semibold">Describe your goal in summary</Label>
+                      <Textarea
+                        placeholder="e.g. Save for a small plot in Douala by end of year."
+                        value={description}
+                        onChange={(e) => setDescription(e.target.value)}
+                        rows={3}
+                        className="text-sm resize-none"
+                      />
+                      <div className="flex justify-end gap-2">
+                        <Button size="sm" variant="ghost" onClick={() => { setDescription(""); setDescPopoverOpen(false); }}>
+                          Clear
+                        </Button>
+                        <Button size="sm" onClick={() => setDescPopoverOpen(false)}>
+                          Save
+                        </Button>
+                      </div>
+                      <p className="text-[10px] text-muted-foreground">Optional — helps you remember the why.</p>
+                    </PopoverContent>
+                  </Popover>
                 )}
               </div>
             )}
@@ -456,6 +503,100 @@ const GoalSavings = () => {
           </div>
         )}
       </div>
+
+      {/* Goal summary dialog */}
+      <Dialog open={!!selectedGoal} onOpenChange={(o) => !o && setSelectedGoal(null)}>
+        <DialogContent className="max-w-md p-0 overflow-hidden">
+          {selectedGoal && (() => {
+            const pct = Math.round((selectedGoal.saved / selectedGoal.target) * 100);
+            const remaining = selectedGoal.target - selectedGoal.saved;
+            return (
+              <div className="flex flex-col">
+                {/* Top: balance + actions */}
+                <div className="gradient-primary text-primary-foreground p-5 space-y-4">
+                  <div>
+                    <p className="text-xs opacity-80 font-medium">Goal Balance</p>
+                    <p className="text-2xl font-bold tracking-tight">
+                      {selectedGoal.saved.toLocaleString()}
+                      <span className="text-sm ml-1 font-semibold opacity-80">FCFA</span>
+                    </p>
+                  </div>
+                  <div className="grid grid-cols-3 gap-2">
+                    <button
+                      onClick={() => { setSelectedGoal(null); navigate("/deposit"); }}
+                      className="flex flex-col items-center gap-1 bg-primary-foreground/15 hover:bg-primary-foreground/25 rounded-xl py-2.5 transition-colors"
+                    >
+                      <ArrowDownToLine size={18} />
+                      <span className="text-[11px] font-semibold">Deposit</span>
+                    </button>
+                    <button
+                      onClick={() => { setSelectedGoal(null); navigate("/withdraw"); }}
+                      className="flex flex-col items-center gap-1 bg-primary-foreground/15 hover:bg-primary-foreground/25 rounded-xl py-2.5 transition-colors"
+                    >
+                      <ArrowUpFromLine size={18} />
+                      <span className="text-[11px] font-semibold">Withdraw</span>
+                    </button>
+                    <div className="flex flex-col items-center gap-1 bg-primary-foreground/15 rounded-xl py-2.5">
+                      <Wallet size={18} />
+                      <span className="text-[11px] font-semibold">Balance</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Summary body */}
+                <div className="p-5 space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Target size={18} className="text-primary" />
+                      <h3 className="font-bold text-base">{selectedGoal.name}</h3>
+                    </div>
+                    {selectedGoal.autoDeposit && (
+                      <span className="bg-success/10 text-success px-2 py-0.5 rounded-full text-[10px] font-bold">Auto</span>
+                    )}
+                  </div>
+
+                  <Progress value={pct} className="h-2" />
+                  <div className="flex justify-between text-xs">
+                    <span className="text-muted-foreground">{selectedGoal.saved.toLocaleString()} / {selectedGoal.target.toLocaleString()} FCFA</span>
+                    <span className="font-bold text-primary">{pct}%</span>
+                  </div>
+
+                  <div className="bg-muted/50 border border-border rounded-xl p-3 space-y-1.5 text-xs">
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Target</span>
+                      <span className="font-semibold">{selectedGoal.target.toLocaleString()} FCFA</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Remaining</span>
+                      <span className="font-semibold">{remaining.toLocaleString()} FCFA</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Duration</span>
+                      <span className="font-semibold">{selectedGoal.duration}</span>
+                    </div>
+                    {selectedGoal.frequency && selectedGoal.savingAmount && (
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Saving plan</span>
+                        <span className="font-semibold">{selectedGoal.savingAmount.toLocaleString()} FCFA / {selectedGoal.frequency}</span>
+                      </div>
+                    )}
+                    {selectedGoal.description && (
+                      <div className="pt-1.5 border-t border-border">
+                        <p className="text-muted-foreground mb-0.5">Description</p>
+                        <p className="text-foreground">{selectedGoal.description}</p>
+                      </div>
+                    )}
+                  </div>
+
+                  <p className="text-[10px] text-muted-foreground text-center">
+                    Goal balance is locked and not shown on your home screen.
+                  </p>
+                </div>
+              </div>
+            );
+          })()}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
