@@ -29,6 +29,9 @@ interface Goal {
   saved: number;
   duration: string;
   autoDeposit: boolean;
+  description?: string;
+  frequency?: string;
+  savingAmount?: number;
 }
 
 const GOAL_OPTIONS: { label: string; image: string }[] = [
