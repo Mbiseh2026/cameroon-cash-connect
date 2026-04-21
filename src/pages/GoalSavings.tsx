@@ -84,6 +84,9 @@ const GoalSavings = () => {
   const [frequency, setFrequency] = useState("");
   const [savingAmount, setSavingAmount] = useState("");
   const [autoDeposit, setAutoDeposit] = useState(false);
+  const [postCreateGoal, setPostCreateGoal] = useState<string | null>(null);
+  const [pinPromptGoal, setPinPromptGoal] = useState<Goal | null>(null);
+  const [pinValue, setPinValue] = useState("");
 
   const totalSteps = 4;
 
