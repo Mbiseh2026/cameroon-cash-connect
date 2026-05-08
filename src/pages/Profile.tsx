@@ -28,10 +28,10 @@ const Profile = () => {
 
         <div className="flex items-center gap-4 bg-card border border-border rounded-xl p-4 mb-6">
           <div className="w-14 h-14 rounded-full gradient-primary flex items-center justify-center">
-            <span className="text-xl font-bold text-primary-foreground">T</span>
+            <span className="text-xl font-bold text-primary-foreground">E</span>
           </div>
           <div>
-            <p className="font-bold">Treasurit User</p>
+            <p className="font-bold">Eduvest User</p>
             <p className="text-xs text-muted-foreground">+237 6XX XXX XXX</p>
             <span className="text-[10px] bg-success/10 text-success px-2 py-0.5 rounded-full font-bold">Verified</span>
           </div>

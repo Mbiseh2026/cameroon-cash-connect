@@ -59,7 +59,7 @@ const Withdraw = () => {
       return;
     }
     if (method === "treasurit" && !treasuritAccount.trim()) {
-      toast.error("Enter the Treasurit account");
+      toast.error("Enter the Eduvest account");
       return;
     }
     if (pin.length !== 4) {
@@ -74,7 +74,7 @@ const Withdraw = () => {
   const options: { key: Method; label: string }[] = [
     { key: "mtn", label: "MTN Mobile Money" },
     { key: "orange", label: "Orange Money" },
-    { key: "treasurit", label: "Treasurit User" },
+    { key: "treasurit", label: "Eduvest User" },
   ];
 
   return (
@@ -120,7 +120,7 @@ const Withdraw = () => {
 
           {method === "treasurit" && (
             <div>
-              <Label className="text-sm font-semibold">Treasurit account</Label>
+              <Label className="text-sm font-semibold">Eduvest account</Label>
               <Input
                 placeholder="Username, phone or account ID"
                 value={treasuritAccount}

@@ -7,6 +7,7 @@ import BottomNav from "@/components/BottomNav";
 import Index from "./pages/Index";
 import Deposit from "./pages/Deposit";
 import GoalSavings from "./pages/GoalSavings";
+import SaveMoney from "./pages/SaveMoney";
 import SendMoney from "./pages/SendMoney";
 import Withdraw from "./pages/Withdraw";
 import BusinessLoan from "./pages/BusinessLoan";
@@ -14,6 +15,8 @@ import TFunds from "./pages/TFunds";
 import History from "./pages/History";
 import Rewards from "./pages/Rewards";
 import Profile from "./pages/Profile";
+import Insurance from "./pages/Insurance";
+import BookLessons from "./pages/BookLessons";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -27,9 +30,12 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/deposit" element={<Deposit />} />
+          <Route path="/save" element={<SaveMoney />} />
           <Route path="/goals" element={<GoalSavings />} />
           <Route path="/send" element={<SendMoney />} />
           <Route path="/withdraw" element={<Withdraw />} />
+          <Route path="/insurance" element={<Insurance />} />
+          <Route path="/lessons" element={<BookLessons />} />
           <Route path="/loans" element={<BusinessLoan />} />
           <Route path="/tfunds" element={<TFunds />} />
           <Route path="/history" element={<History />} />
