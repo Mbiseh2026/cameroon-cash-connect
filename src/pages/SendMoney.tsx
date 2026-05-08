@@ -10,7 +10,7 @@ import { Phone } from "lucide-react";
 type Method = "treasurit" | "mtn" | "orange";
 
 const methods: { key: Method; label: string }[] = [
-  { key: "treasurit", label: "Treasurit User" },
+  { key: "treasurit", label: "Eduvest User" },
   { key: "mtn", label: "MTN MoMo" },
   { key: "orange", label: "Orange Money" },
 ];
@@ -110,7 +110,7 @@ const SendMoney = () => {
 
           {method === "treasurit" && (
             <div>
-              <Label className="text-sm font-semibold">Treasurit account</Label>
+              <Label className="text-sm font-semibold">Eduvest account</Label>
               <Input
                 placeholder="Search by name, @username or phone"
                 value={recipient}

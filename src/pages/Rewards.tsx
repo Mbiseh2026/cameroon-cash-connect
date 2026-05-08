@@ -12,12 +12,12 @@ const Rewards = () => {
   return (
     <div className="min-h-screen bg-background pb-20">
       <div className="max-w-md mx-auto px-4 pt-6 animate-fade-in">
-        <PageHeader title="My Rewards" subtitle="Earn points for using Treasurit" />
+        <PageHeader title="My Rewards" subtitle="Earn points for using Eduvest" />
 
         <div className="gradient-primary rounded-2xl p-5 text-primary-foreground mb-6">
           <p className="text-sm opacity-80">Total Points</p>
           <p className="text-3xl font-bold">50</p>
-          <p className="text-xs opacity-70 mt-1">Keep using Treasurit to earn more!</p>
+          <p className="text-xs opacity-70 mt-1">Keep using Eduvest to earn more!</p>
         </div>
 
         <h2 className="text-sm font-bold mb-3">Achievements</h2>

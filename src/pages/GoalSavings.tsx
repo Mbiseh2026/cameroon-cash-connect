@@ -125,7 +125,7 @@ const GoalSavings = () => {
   const selectedFreq = SAVING_FREQUENCIES.find(f => f.value === frequency);
 
   const openWhatsApp = () => {
-    window.open("https://wa.me/237600000000?text=Hi%20Treasurit,%20I%20need%20help%20budgeting%20my%20savings%20goal.", "_blank");
+    window.open("https://wa.me/237600000000?text=Hi%20Eduvest,%20I%20need%20help%20budgeting%20my%20savings%20goal.", "_blank");
   };
 
   return (
