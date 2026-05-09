@@ -12,8 +12,8 @@ const navItems = [
 ];
 
 const PAY_OPTIONS = [
-  { icon: GraduationCap, label: "Pay Tuition Fees", desc: "School fees & receipts", path: "/send", tone: "bg-primary/10 text-primary" },
-  { icon: HomeIcon, label: "Pay Rent", desc: "Track & build trust", path: "/send", tone: "bg-secondary/10 text-secondary" },
+  { icon: GraduationCap, label: "Pay Tuition Fees", desc: "School fees & receipts", path: "/pay-fees", tone: "bg-primary/10 text-primary" },
+  { icon: HomeIcon, label: "Pay Rent", desc: "Track & build trust", path: "/pay-rent", tone: "bg-secondary/10 text-secondary" },
   { icon: Wallet, label: "Pay Salary", desc: "Pay staff securely", path: "/send", tone: "bg-primary/10 text-primary" },
   { icon: Shield2, label: "Pay Insurance", desc: "Cover & protect", path: "/insurance", tone: "bg-secondary/10 text-secondary" },
 ];
