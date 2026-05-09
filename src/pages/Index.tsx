@@ -10,23 +10,23 @@ import logo from "@/assets/eduvest-logo.png";
 import hero from "@/assets/eduvest-hero.png";
 
 const PRIMARY_QUICK = [
-  { icon: ScanLine, label: "Pay School Fees", action: "nav", path: "/send", tone: "bg-primary/10 text-primary" },
+  { icon: ScanLine, label: "Pay School Fees", action: "nav", path: "/pay-fees", tone: "bg-primary/10 text-primary" },
   { icon: SendHorizontal, label: "Send Money", action: "send", tone: "bg-secondary/10 text-secondary" },
   { icon: PiggyBank, label: "Save Money", action: "nav", path: "/save", tone: "bg-primary/10 text-primary" },
   { icon: GraduationCap, label: "Book Lessons", action: "nav", path: "/lessons", tone: "bg-secondary/10 text-secondary" },
 ];
 
 const MORE_QUICK = [
-  { icon: HomeIconLucide, label: "Pay Rent", path: "/send", tone: "bg-primary/10 text-primary" },
+  { icon: HomeIconLucide, label: "Pay Rent", path: "/pay-rent", tone: "bg-primary/10 text-primary" },
   { icon: Wallet, label: "Pay Salary", path: "/send", tone: "bg-secondary/10 text-secondary" },
   { icon: Landmark, label: "Take Loan", path: "/loans", tone: "bg-primary/10 text-primary" },
   { icon: HomeIconLucide, label: "Housing Plans", path: "/loans", tone: "bg-secondary/10 text-secondary" },
 ];
 
 const SERVICES = [
-  { icon: GraduationCap, label: "School Fee Payments", desc: "Pay school fees securely with digital receipts and tracking.", path: "/send", tone: "bg-primary/10 text-primary" },
+  { icon: GraduationCap, label: "School Fee Payments", desc: "Pay school fees securely with digital receipts and tracking.", path: "/pay-fees", tone: "bg-primary/10 text-primary" },
   { icon: PiggyBank, label: "Savings & Wallet", desc: "Save for fees, housing, emergencies, or goals.", path: "/save", tone: "bg-secondary/10 text-secondary" },
-  { icon: HomeIconLucide, label: "Rent Payments", desc: "Pay & track rent while building Trust Score credibility.", path: "/send", tone: "bg-primary/10 text-primary" },
+  { icon: HomeIconLucide, label: "Rent Payments", desc: "Pay & track rent while building Trust Score credibility.", path: "/pay-rent", tone: "bg-primary/10 text-primary" },
   { icon: Landmark, label: "Loans & Financing", desc: "Access micro-loans based on payment & savings history.", path: "/loans", tone: "bg-secondary/10 text-secondary" },
   { icon: BookOpen, label: "Private Lessons", desc: "Connect parents with verified teachers for home tutoring.", path: "/lessons", tone: "bg-primary/10 text-primary" },
   { icon: Wallet, label: "Salary Payment", desc: "Pay staff salaries securely with full payslips & records.", path: "/send", tone: "bg-secondary/10 text-secondary" },
