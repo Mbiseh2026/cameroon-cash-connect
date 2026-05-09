@@ -11,6 +11,9 @@ import SaveMoney from "./pages/SaveMoney";
 import SendMoney from "./pages/SendMoney";
 import Withdraw from "./pages/Withdraw";
 import BusinessLoan from "./pages/BusinessLoan";
+import PaySchoolFees from "./pages/PaySchoolFees";
+import PayRent from "./pages/PayRent";
+import Loans from "./pages/Loans";
 import TFunds from "./pages/TFunds";
 import History from "./pages/History";
 import Rewards from "./pages/Rewards";
@@ -36,7 +39,10 @@ const App = () => (
           <Route path="/withdraw" element={<Withdraw />} />
           <Route path="/insurance" element={<Insurance />} />
           <Route path="/lessons" element={<BookLessons />} />
-          <Route path="/loans" element={<BusinessLoan />} />
+          <Route path="/pay-fees" element={<PaySchoolFees />} />
+          <Route path="/pay-rent" element={<PayRent />} />
+          <Route path="/loans" element={<Loans />} />
+          <Route path="/business-loan" element={<BusinessLoan />} />
           <Route path="/tfunds" element={<TFunds />} />
           <Route path="/history" element={<History />} />
           <Route path="/rewards" element={<Rewards />} />
