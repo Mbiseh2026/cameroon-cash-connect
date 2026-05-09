@@ -1,33 +1,64 @@
-import { Bell, Wallet, PiggyBank, TrendingUp, GraduationCap, ChevronRight, SendHorizontal, Home as HomeIcon, ScanLine, BookOpen, Users } from "lucide-react";
+import {
+  Bell, Wallet, PiggyBank, TrendingUp, GraduationCap, ChevronRight,
+  SendHorizontal, Home as HomeIconLucide, ScanLine, BookOpen, Users,
+  ArrowUpFromLine, Landmark, ShieldCheck, Briefcase, Building2, UserCog, MoreHorizontal,
+} from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import logo from "@/assets/eduvest-logo.png";
 import hero from "@/assets/eduvest-hero.png";
 
-const QUICK_ACTIONS = [
-  { icon: ScanLine, label: "Pay School Fees", path: "/send", tone: "bg-primary/10 text-primary" },
-  { icon: SendHorizontal, label: "Send Money", path: "/send", tone: "bg-secondary/10 text-secondary" },
-  { icon: PiggyBank, label: "Save Money", path: "/save", tone: "bg-primary/10 text-primary" },
-  { icon: GraduationCap, label: "Book Lessons", path: "/lessons", tone: "bg-secondary/10 text-secondary" },
-  { icon: HomeIcon, label: "Housing Plans", path: "/loans", tone: "bg-primary/10 text-primary" },
+const PRIMARY_QUICK = [
+  { icon: ScanLine, label: "Pay School Fees", action: "nav", path: "/send", tone: "bg-primary/10 text-primary" },
+  { icon: SendHorizontal, label: "Send Money", action: "send", tone: "bg-secondary/10 text-secondary" },
+  { icon: PiggyBank, label: "Save Money", action: "nav", path: "/save", tone: "bg-primary/10 text-primary" },
+  { icon: GraduationCap, label: "Book Lessons", action: "nav", path: "/lessons", tone: "bg-secondary/10 text-secondary" },
+];
+
+const MORE_QUICK = [
+  { icon: HomeIconLucide, label: "Pay Rent", path: "/send", tone: "bg-primary/10 text-primary" },
+  { icon: Wallet, label: "Pay Salary", path: "/send", tone: "bg-secondary/10 text-secondary" },
+  { icon: Landmark, label: "Take Loan", path: "/loans", tone: "bg-primary/10 text-primary" },
+  { icon: HomeIconLucide, label: "Housing Plans", path: "/loans", tone: "bg-secondary/10 text-secondary" },
+];
+
+const SERVICES = [
+  { icon: GraduationCap, label: "School Fee Payments", desc: "Pay school fees securely with digital receipts and tracking.", path: "/send", tone: "bg-primary/10 text-primary" },
+  { icon: PiggyBank, label: "Savings & Wallet", desc: "Save for fees, housing, emergencies, or goals.", path: "/save", tone: "bg-secondary/10 text-secondary" },
+  { icon: HomeIconLucide, label: "Rent Payments", desc: "Pay & track rent while building Trust Score credibility.", path: "/send", tone: "bg-primary/10 text-primary" },
+  { icon: Landmark, label: "Loans & Financing", desc: "Access micro-loans based on payment & savings history.", path: "/loans", tone: "bg-secondary/10 text-secondary" },
+  { icon: BookOpen, label: "Private Lessons", desc: "Connect parents with verified teachers for home tutoring.", path: "/lessons", tone: "bg-primary/10 text-primary" },
+  { icon: Wallet, label: "Salary Payment", desc: "Pay staff salaries securely with full payslips & records.", path: "/send", tone: "bg-secondary/10 text-secondary" },
 ];
 
 const COMMUNITY = [
-  { icon: GraduationCap, label: "Teachers", desc: "Offer & earn", tone: "bg-primary/10 text-primary" },
-  { icon: Users, label: "Parents", desc: "Pay & track", tone: "bg-secondary/10 text-secondary" },
-  { icon: BookOpen, label: "Students", desc: "Learn & grow", tone: "bg-primary/10 text-primary" },
+  { icon: Users, label: "Parents", desc: "Pay & track" },
+  { icon: GraduationCap, label: "Teachers", desc: "Offer & earn" },
+  { icon: BookOpen, label: "Students", desc: "Learn & grow" },
+  { icon: Building2, label: "Schools", desc: "Manage & grow" },
+  { icon: HomeIconLucide, label: "Tenants/Landlords", desc: "Rent & track" },
+  { icon: Briefcase, label: "Business Owners", desc: "Pay staff" },
+  { icon: UserCog, label: "Employees", desc: "Earn & save" },
 ];
 
 const Index = () => {
   const navigate = useNavigate();
   const [showBalance, setShowBalance] = useState(false);
+  const [moreQuickOpen, setMoreQuickOpen] = useState(false);
+  const [sendOpen, setSendOpen] = useState(false);
+  const [servicesOpen, setServicesOpen] = useState(false);
+  const [communityOpen, setCommunityOpen] = useState(false);
+
+  const visibleServices = SERVICES.slice(0, 3);
+  const visibleCommunity = COMMUNITY.slice(0, 4);
 
   return (
     <div className="min-h-screen bg-background pb-28">
       <div className="max-w-md mx-auto px-4 pt-5 space-y-5 animate-fade-in">
         {/* Header */}
         <header className="flex items-center justify-between">
-          <img src={logo} alt="Eduvest logo" className="h-8 w-auto" width={1536} height={1024} />
+          <img src={logo} alt="Eduvest logo" className="h-12 w-auto" width={1536} height={1024} />
           <div className="flex items-center gap-3">
             <button className="relative p-2 rounded-full hover:bg-muted">
               <Bell size={20} className="text-secondary" />
@@ -63,23 +94,26 @@ const Index = () => {
           />
         </section>
 
-        {/* Quick Actions */}
+        {/* Quick Actions - static grid */}
         <section className="bg-card border border-border rounded-2xl p-4">
           <div className="flex items-center justify-between mb-3">
             <h2 className="text-sm font-bold text-secondary">Quick Actions</h2>
-            <button className="text-xs font-semibold text-primary">See all</button>
+            <button onClick={() => setMoreQuickOpen(true)} className="text-xs font-semibold text-primary">See all</button>
           </div>
-          <div className="flex gap-3 overflow-x-auto -mx-1 px-1 pb-1 scrollbar-hide">
-            {QUICK_ACTIONS.map((a) => (
+          <div className="grid grid-cols-4 gap-2">
+            {PRIMARY_QUICK.map((a) => (
               <button
                 key={a.label}
-                onClick={() => navigate(a.path)}
-                className="flex-shrink-0 w-[72px] flex flex-col items-center gap-1.5"
+                onClick={() => {
+                  if (a.action === "send") setSendOpen(true);
+                  else navigate(a.path!);
+                }}
+                className="flex flex-col items-center gap-1.5"
               >
-                <div className={`w-14 h-14 rounded-2xl flex items-center justify-center ${a.tone}`}>
-                  <a.icon size={24} />
+                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${a.tone}`}>
+                  <a.icon size={20} />
                 </div>
-                <span className="text-[11px] font-semibold text-foreground text-center leading-tight">
+                <span className="text-[10px] font-semibold text-foreground text-center leading-tight">
                   {a.label}
                 </span>
               </button>
@@ -87,29 +121,15 @@ const Index = () => {
           </div>
         </section>
 
-        {/* My Overview (moved from bottom) */}
+        {/* Services (replaces Overview) */}
         <section className="bg-card border border-border rounded-2xl p-4">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-sm font-bold text-secondary">My Overview</h2>
-            <button className="text-xs font-semibold text-primary">See details</button>
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-sm font-bold text-secondary">Services</h2>
+            <button onClick={() => setServicesOpen(true)} className="text-xs font-semibold text-primary">See all</button>
           </div>
-          <div className="grid grid-cols-3 gap-2">
-            {[
-              { icon: Wallet, label: "Wallet Balance", value: "245,000", tone: "bg-primary/10 text-primary" },
-              { icon: PiggyBank, label: "Savings Balance", value: "120,000", tone: "bg-secondary/10 text-secondary" },
-              { icon: TrendingUp, label: "Loan Eligibility", value: "1,500,000", tone: "bg-primary/10 text-primary" },
-            ].map((m) => (
-              <div key={m.label} className="flex flex-col items-center text-center">
-                <div className={`w-11 h-11 rounded-full flex items-center justify-center mb-2 ${m.tone}`}>
-                  <m.icon size={20} />
-                </div>
-                <p className="text-[10px] text-muted-foreground leading-tight mb-0.5">{m.label}</p>
-                <p className="text-xs font-bold flex items-center gap-0.5">
-                  <span className="text-[9px] text-muted-foreground">FCFA</span>
-                  {m.value}
-                  <ChevronRight size={12} className="text-primary" />
-                </p>
-              </div>
+          <div className="space-y-2">
+            {visibleServices.map((s) => (
+              <ServiceRow key={s.label} service={s} onStart={() => navigate(s.path)} />
             ))}
           </div>
         </section>
@@ -119,27 +139,21 @@ const Index = () => {
           <div className="flex items-center justify-between mb-3">
             <div>
               <h2 className="text-sm font-bold text-secondary">Eduvest Community</h2>
-              <p className="text-[10px] text-muted-foreground">Connect teachers, parents & students</p>
+              <p className="text-[10px] text-muted-foreground">Connect everyone in the ecosystem</p>
             </div>
-            <button
-              onClick={() => navigate("/lessons")}
-              className="text-xs font-semibold text-primary"
-            >
-              Book lessons
-            </button>
+            <button onClick={() => setCommunityOpen(true)} className="text-xs font-semibold text-primary">See all</button>
           </div>
-          <div className="grid grid-cols-3 gap-2">
-            {COMMUNITY.map((c) => (
+          <div className="grid grid-cols-4 gap-2">
+            {visibleCommunity.map((c) => (
               <button
                 key={c.label}
                 onClick={() => navigate("/lessons")}
-                className="flex flex-col items-center gap-1.5 p-2 rounded-xl hover:bg-muted transition"
+                className="flex flex-col items-center gap-1 p-2 rounded-xl hover:bg-muted transition"
               >
-                <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${c.tone}`}>
-                  <c.icon size={22} />
+                <div className="w-11 h-11 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+                  <c.icon size={20} />
                 </div>
-                <span className="text-[11px] font-bold">{c.label}</span>
-                <span className="text-[9px] text-muted-foreground">{c.desc}</span>
+                <span className="text-[10px] font-bold text-center leading-tight">{c.label}</span>
               </button>
             ))}
           </div>
@@ -160,8 +174,120 @@ const Index = () => {
           <ChevronRight size={18} className="text-primary" />
         </section>
       </div>
+
+      {/* More Quick Actions sheet */}
+      <Sheet open={moreQuickOpen} onOpenChange={setMoreQuickOpen}>
+        <SheetContent side="bottom" className="rounded-t-2xl max-w-md mx-auto">
+          <SheetHeader><SheetTitle className="text-secondary">All Quick Actions</SheetTitle></SheetHeader>
+          <div className="grid grid-cols-4 gap-3 mt-4">
+            {MORE_QUICK.map((a) => (
+              <button
+                key={a.label}
+                onClick={() => { setMoreQuickOpen(false); navigate(a.path); }}
+                className="flex flex-col items-center gap-1.5"
+              >
+                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${a.tone}`}>
+                  <a.icon size={20} />
+                </div>
+                <span className="text-[10px] font-semibold text-center leading-tight">{a.label}</span>
+              </button>
+            ))}
+          </div>
+        </SheetContent>
+      </Sheet>
+
+      {/* Send Money sheet */}
+      <Sheet open={sendOpen} onOpenChange={setSendOpen}>
+        <SheetContent side="bottom" className="rounded-t-2xl max-w-md mx-auto">
+          <SheetHeader><SheetTitle className="text-secondary">Send Money</SheetTitle></SheetHeader>
+          <div className="grid grid-cols-2 gap-3 mt-4">
+            <button
+              onClick={() => { setSendOpen(false); navigate("/send"); }}
+              className="flex flex-col items-start gap-2 p-4 bg-card border border-border rounded-xl hover:shadow-md transition text-left"
+            >
+              <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+                <SendHorizontal size={20} />
+              </div>
+              <span className="text-sm font-bold">Send</span>
+              <span className="text-[10px] text-muted-foreground">Transfer to another user</span>
+            </button>
+            <button
+              onClick={() => { setSendOpen(false); navigate("/withdraw"); }}
+              className="flex flex-col items-start gap-2 p-4 bg-card border border-border rounded-xl hover:shadow-md transition text-left"
+            >
+              <div className="w-10 h-10 rounded-xl bg-secondary/10 text-secondary flex items-center justify-center">
+                <ArrowUpFromLine size={20} />
+              </div>
+              <span className="text-sm font-bold">Withdraw</span>
+              <span className="text-[10px] text-muted-foreground">Cash out from your wallet</span>
+            </button>
+          </div>
+        </SheetContent>
+      </Sheet>
+
+      {/* All services sheet */}
+      <Sheet open={servicesOpen} onOpenChange={setServicesOpen}>
+        <SheetContent side="bottom" className="rounded-t-2xl max-w-md mx-auto max-h-[85vh] overflow-y-auto">
+          <SheetHeader><SheetTitle className="text-secondary">All Services</SheetTitle></SheetHeader>
+          <div className="space-y-2 mt-4">
+            {SERVICES.map((s) => (
+              <ServiceRow
+                key={s.label}
+                service={s}
+                onStart={() => { setServicesOpen(false); navigate(s.path); }}
+              />
+            ))}
+          </div>
+        </SheetContent>
+      </Sheet>
+
+      {/* All community sheet */}
+      <Sheet open={communityOpen} onOpenChange={setCommunityOpen}>
+        <SheetContent side="bottom" className="rounded-t-2xl max-w-md mx-auto">
+          <SheetHeader><SheetTitle className="text-secondary">Eduvest Community</SheetTitle></SheetHeader>
+          <div className="grid grid-cols-4 gap-3 mt-4">
+            {COMMUNITY.map((c) => (
+              <button
+                key={c.label}
+                onClick={() => { setCommunityOpen(false); navigate("/lessons"); }}
+                className="flex flex-col items-center gap-1.5 p-2 rounded-xl hover:bg-muted"
+              >
+                <div className="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+                  <c.icon size={20} />
+                </div>
+                <span className="text-[10px] font-bold text-center leading-tight">{c.label}</span>
+                <span className="text-[9px] text-muted-foreground text-center">{c.desc}</span>
+              </button>
+            ))}
+          </div>
+        </SheetContent>
+      </Sheet>
     </div>
   );
 };
+
+const ServiceRow = ({
+  service,
+  onStart,
+}: {
+  service: { icon: any; label: string; desc: string; tone: string };
+  onStart: () => void;
+}) => (
+  <div className="flex items-center gap-3 p-3 border border-border rounded-xl">
+    <div className={`w-11 h-11 rounded-xl flex-shrink-0 flex items-center justify-center ${service.tone}`}>
+      <service.icon size={20} />
+    </div>
+    <div className="flex-1 min-w-0">
+      <p className="text-xs font-bold text-foreground">{service.label}</p>
+      <p className="text-[10px] text-muted-foreground leading-tight line-clamp-2">{service.desc}</p>
+    </div>
+    <button
+      onClick={onStart}
+      className="text-[10px] font-bold bg-primary text-primary-foreground px-3 py-1.5 rounded-lg whitespace-nowrap"
+    >
+      Get Started
+    </button>
+  </div>
+);
 
 export default Index;
