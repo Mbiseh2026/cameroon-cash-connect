@@ -1,5 +1,5 @@
 import PageHeader from "@/components/PageHeader";
-import { User, Shield, Bell, LogOut, Sun, Moon, Languages } from "lucide-react";
+import { User, Shield, Bell, LogOut, Sun, Moon, Languages, Wallet, PiggyBank, TrendingUp, ChevronRight } from "lucide-react";
 import { useState, useEffect } from "react";
 
 const Profile = () => {
