@@ -37,6 +37,33 @@ const Profile = () => {
           </div>
         </div>
 
+        {/* My Overview */}
+        <section className="bg-card border border-border rounded-xl p-4 mb-6">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-sm font-bold text-secondary">My Overview</h2>
+            <button className="text-xs font-semibold text-primary">See all</button>
+          </div>
+          <div className="grid grid-cols-3 gap-2">
+            {[
+              { icon: Wallet, label: "Wallet Balance", value: "245,000", tone: "bg-primary/10 text-primary" },
+              { icon: PiggyBank, label: "Savings Balance", value: "120,000", tone: "bg-secondary/10 text-secondary" },
+              { icon: TrendingUp, label: "Loan Eligibility", value: "1,500,000", tone: "bg-primary/10 text-primary" },
+            ].map((m) => (
+              <div key={m.label} className="flex flex-col items-center text-center">
+                <div className={`w-11 h-11 rounded-full flex items-center justify-center mb-2 ${m.tone}`}>
+                  <m.icon size={20} />
+                </div>
+                <p className="text-[10px] text-muted-foreground leading-tight mb-0.5">{m.label}</p>
+                <p className="text-xs font-bold flex items-center gap-0.5">
+                  <span className="text-[9px] text-muted-foreground">FCFA</span>
+                  {m.value}
+                  <ChevronRight size={12} className="text-primary" />
+                </p>
+              </div>
+            ))}
+          </div>
+        </section>
+
         <div className="space-y-2">
           {[
             { icon: User, label: "Personal Information" },
