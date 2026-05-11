@@ -1,58 +1,39 @@
 import PageHeader from "@/components/PageHeader";
+import Stepper from "@/components/Stepper";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
 import { toast } from "sonner";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
-import { Phone } from "lucide-react";
+import { ChevronLeft } from "lucide-react";
 
 type Method = "mtn" | "orange";
+const STEPS = ["Method", "Account", "Confirm"];
 
 const Deposit = () => {
-  const [amount, setAmount] = useState("");
-  const [method, setMethod] = useState<Method>("mtn");
+  const [step, setStep] = useState(0);
+  const [method, setMethod] = useState<Method | "">("");
   const [phone, setPhone] = useState("");
   const [accountName, setAccountName] = useState("");
+  const [amount, setAmount] = useState("");
 
-  const [phoneDialog, setPhoneDialog] = useState<null | Method>(null);
-  const [phoneInput, setPhoneInput] = useState("");
-  const [nameInput, setNameInput] = useState("");
-
-  const selectMethod = (key: Method) => {
-    setPhoneInput(method === key ? phone : "");
-    setNameInput(method === key ? accountName : "");
-    setPhoneDialog(key);
+  const validate = () => {
+    if (step === 0 && !method) { toast.error("Pick a method"); return false; }
+    if (step === 1) {
+      if (!/^\d{9}$/.test(phone)) { toast.error("Enter a valid 9-digit number"); return false; }
+      if (!accountName.trim()) { toast.error("Enter account name"); return false; }
+    }
+    if (step === 2 && (!amount || Number(amount) < 100)) { toast.error("Minimum 100 FCFA"); return false; }
+    return true;
   };
 
-  const confirmPhone = () => {
-    const cleaned = phoneInput.replace(/\s+/g, "");
-    if (!/^\d{9}$/.test(cleaned)) {
-      toast.error("Enter a valid 9-digit phone number");
-      return;
-    }
-    if (!nameInput.trim()) {
-      toast.error("Enter the account name");
-      return;
-    }
-    setMethod(phoneDialog!);
-    setPhone(cleaned);
-    setAccountName(nameInput.trim());
-    setPhoneDialog(null);
-  };
+  const next = () => { if (validate()) setStep((s) => Math.min(s + 1, STEPS.length - 1)); };
+  const back = () => setStep((s) => Math.max(0, s - 1));
 
-  const handleDeposit = () => {
-    const num = Number(amount);
-    if (!num || num < 100) {
-      toast.error("Minimum deposit is 100 FCFA");
-      return;
-    }
-    if (!phone) {
-      toast.error(`Add your ${method.toUpperCase()} phone number`);
-      return;
-    }
-    toast.success(`Deposit of ${num.toLocaleString()} FCFA initiated via ${method.toUpperCase()}`);
-    setAmount("");
+  const submit = () => {
+    if (!validate()) return;
+    toast.success(`Deposit of ${Number(amount).toLocaleString()} FCFA initiated via ${method!.toUpperCase()}`);
+    setStep(0); setMethod(""); setPhone(""); setAccountName(""); setAmount("");
   };
 
   const methods: { key: Method; label: string; color: string }[] = [
@@ -63,115 +44,78 @@ const Deposit = () => {
   return (
     <div className="min-h-screen bg-background pb-20">
       <div className="max-w-md mx-auto px-4 pt-6 animate-fade-in">
-        <PageHeader title="Deposit / Top Up" subtitle="Add money to your wallet" />
+        <PageHeader title="Deposit / Top Up" subtitle={`Step ${step + 1} of ${STEPS.length}`} />
+        <Stepper steps={STEPS} current={step} />
 
-        <div className="space-y-5">
-          <div>
-            <Label className="text-sm font-semibold">Amount (FCFA)</Label>
-            <Input
-              type="number"
-              placeholder="Enter amount"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-              className="mt-1.5 text-lg font-bold h-12"
-            />
-          </div>
-
+        {step === 0 && (
           <div>
             <Label className="text-sm font-semibold mb-2 block">Funding Method</Label>
             <div className="space-y-2">
-              {methods.map((m) => {
-                const active = method === m.key;
-                return (
-                  <button
-                    key={m.key}
-                    onClick={() => selectMethod(m.key)}
-                    className={`w-full flex items-center gap-3 p-3 rounded-xl border transition-all text-left ${
-                      active ? "border-primary bg-primary/5 shadow-sm" : "border-border bg-card"
-                    }`}
-                  >
-                    <div className={`w-3 h-3 rounded-full ${m.color}`} />
-                    <div className="flex-1">
-                      <div className="text-sm font-semibold">{m.label}</div>
-                      {active && phone ? (
-                        <div className="text-xs text-muted-foreground mt-0.5">
-                          +237 {phone} • {accountName}
-                        </div>
-                      ) : (
-                        <div className="text-xs text-muted-foreground mt-0.5">Tap to add phone number</div>
-                      )}
-                    </div>
-                  </button>
-                );
-              })}
+              {methods.map((m) => (
+                <button
+                  key={m.key}
+                  onClick={() => setMethod(m.key)}
+                  className={`w-full flex items-center gap-3 p-4 rounded-xl border text-left ${
+                    method === m.key ? "border-primary bg-primary/5" : "border-border bg-card"
+                  }`}
+                >
+                  <div className={`w-3 h-3 rounded-full ${m.color}`} />
+                  <span className="text-sm font-semibold">{m.label}</span>
+                </button>
+              ))}
             </div>
           </div>
+        )}
 
-          {amount && Number(amount) >= 100 && (
-            <div className="bg-muted rounded-xl p-3 text-sm space-y-1">
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Amount</span>
-                <span className="font-bold">{Number(amount).toLocaleString()} FCFA</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Fees</span>
-                <span className="font-bold text-success">Free</span>
+        {step === 1 && (
+          <div className="space-y-4">
+            <div>
+              <Label className="text-sm font-semibold">Phone number</Label>
+              <div className="flex items-center gap-2 mt-1.5">
+                <span className="text-sm font-semibold text-muted-foreground">+237</span>
+                <Input type="tel" inputMode="numeric" maxLength={9} placeholder="6XX XXX XXX" value={phone} onChange={(e) => setPhone(e.target.value.replace(/\D/g, ""))} className="h-12" />
               </div>
             </div>
-          )}
+            <div>
+              <Label className="text-sm font-semibold">Account name</Label>
+              <Input placeholder="Full name on the mobile money account" value={accountName} onChange={(e) => setAccountName(e.target.value)} className="mt-1.5 h-11" />
+            </div>
+          </div>
+        )}
 
-          <Button onClick={handleDeposit} className="w-full h-12 text-base font-bold gradient-primary text-primary-foreground">
-            Confirm Deposit
-          </Button>
+        {step === 2 && (
+          <div className="space-y-4">
+            <div>
+              <Label className="text-sm font-semibold">Amount (FCFA)</Label>
+              <Input type="number" placeholder="Enter amount" value={amount} onChange={(e) => setAmount(e.target.value)} className="mt-1.5 text-lg font-bold h-12" />
+            </div>
+            <div className="bg-muted rounded-xl p-3 text-xs space-y-1">
+              <Row k="Method" v={method === "mtn" ? "MTN Mobile Money" : "Orange Money"} />
+              <Row k="Account" v={`${accountName} (+237 ${phone})`} />
+              <Row k="Fees" v="Free" />
+            </div>
+          </div>
+        )}
+
+        <div className="flex gap-3 mt-6">
+          {step > 0 && (
+            <Button variant="outline" onClick={back} className="flex-1 h-12">
+              <ChevronLeft size={18} className="mr-1" /> Back
+            </Button>
+          )}
+          {step < STEPS.length - 1 ? (
+            <Button onClick={next} className="flex-1 h-12 gradient-primary text-primary-foreground font-bold">Continue</Button>
+          ) : (
+            <Button onClick={submit} className="flex-1 h-12 gradient-primary text-primary-foreground font-bold">Confirm Deposit</Button>
+          )}
         </div>
       </div>
-
-      <Dialog open={!!phoneDialog} onOpenChange={(o) => { if (!o) setPhoneDialog(null); }}>
-        <DialogContent className="max-w-sm">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <Phone size={18} className="text-primary" />
-              {phoneDialog === "mtn" ? "MTN Mobile Money" : "Orange Money"}
-            </DialogTitle>
-            <DialogDescription>
-              Enter the phone number and account name to debit.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-3">
-            <div>
-              <Label className="text-xs font-semibold">Phone number</Label>
-              <div className="flex items-center gap-2 mt-1">
-                <span className="text-sm font-semibold text-muted-foreground">+237</span>
-                <Input
-                  type="tel"
-                  inputMode="numeric"
-                  maxLength={9}
-                  placeholder="6XX XXX XXX"
-                  value={phoneInput}
-                  onChange={(e) => setPhoneInput(e.target.value.replace(/\D/g, ""))}
-                  className="h-12 text-base font-semibold tracking-wider"
-                  autoFocus
-                />
-              </div>
-            </div>
-            <div>
-              <Label className="text-xs font-semibold">Account name</Label>
-              <Input
-                placeholder="Full name on the mobile money account"
-                value={nameInput}
-                onChange={(e) => setNameInput(e.target.value)}
-                className="mt-1 h-11"
-              />
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setPhoneDialog(null)}>Cancel</Button>
-            <Button onClick={confirmPhone} className="gradient-primary text-primary-foreground">Continue</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 };
+
+const Row = ({ k, v }: { k: string; v: string }) => (
+  <div className="flex justify-between"><span className="text-muted-foreground">{k}</span><span className="font-bold">{v}</span></div>
+);
 
 export default Deposit;

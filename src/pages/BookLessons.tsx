@@ -1,10 +1,19 @@
 import PageHeader from "@/components/PageHeader";
-import { GraduationCap, Star, Calendar as CalendarIcon, Search, BadgeCheck, Video, MapPin, CheckCircle2 } from "lucide-react";
+import { GraduationCap, Star, Calendar as CalendarIcon, Search, BadgeCheck, Video, MapPin, CheckCircle2, Baby, BookOpen, School, University, ChevronLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useMemo, useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { toast } from "sonner";
+
+const CATEGORIES = [
+  { key: "nursery", label: "Nursery School", desc: "Ages 2–5 · Foundational play-based learning", icon: Baby },
+  { key: "primary", label: "Primary School", desc: "Class 1–6 · Core literacy & numeracy", icon: BookOpen },
+  { key: "secondary", label: "Secondary School", desc: "Form 1–5 · Subject teachers", icon: School },
+  { key: "high", label: "High School", desc: "Lower & Upper 6 · GCE / Bac prep", icon: GraduationCap },
+  { key: "tertiary", label: "Tertiary / Higher Institute", desc: "University & college coaching", icon: University },
+] as const;
+type CatKey = typeof CATEGORIES[number]["key"];
 
 interface Teacher {
   id: string;
@@ -46,6 +55,7 @@ const TEACHERS: Teacher[] = [
 type Mode = "online" | "in_person";
 
 const BookLessons = () => {
+  const [category, setCategory] = useState<CatKey | null>(null);
   const [query, setQuery] = useState("");
   const [active, setActive] = useState<Teacher | null>(null);
   const [mode, setMode] = useState<Mode>("online");
@@ -66,10 +76,47 @@ const BookLessons = () => {
     toast.success("Lesson booked & paid");
   };
 
+  if (!category) {
+    return (
+      <div className="min-h-screen bg-background pb-24">
+        <div className="max-w-md mx-auto px-4 pt-6 animate-fade-in">
+          <PageHeader title="Book Lessons" subtitle="Pick a level to start" />
+          <div className="bg-accent rounded-2xl p-4 mb-4">
+            <p className="text-xs font-bold text-secondary mb-1">Choose your child's level</p>
+            <p className="text-[11px] text-muted-foreground">We'll show verified teachers matching that level.</p>
+          </div>
+          <div className="space-y-2">
+            {CATEGORIES.map((c) => (
+              <button
+                key={c.key}
+                onClick={() => setCategory(c.key)}
+                className="w-full flex items-center gap-3 p-4 bg-card border border-border rounded-xl hover:shadow-sm transition text-left"
+              >
+                <div className="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+                  <c.icon size={22} />
+                </div>
+                <div className="flex-1">
+                  <p className="font-bold text-sm">{c.label}</p>
+                  <p className="text-[11px] text-muted-foreground">{c.desc}</p>
+                </div>
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const catLabel = CATEGORIES.find((c) => c.key === category)!.label;
+
   return (
     <div className="min-h-screen bg-background pb-24">
       <div className="max-w-md mx-auto px-4 pt-6 animate-fade-in">
-        <PageHeader title="Book Lessons" subtitle="Find a verified teacher" />
+        <PageHeader title="Book Lessons" subtitle={catLabel} />
+
+        <button onClick={() => setCategory(null)} className="flex items-center gap-1 text-xs font-semibold text-primary mb-3">
+          <ChevronLeft size={14} /> Change level
+        </button>
 
         <div className="bg-accent rounded-2xl p-4 mb-4 flex items-center gap-3">
           <div className="w-11 h-11 rounded-xl bg-primary text-primary-foreground flex items-center justify-center">

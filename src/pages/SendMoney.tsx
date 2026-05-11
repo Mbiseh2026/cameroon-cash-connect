@@ -1,21 +1,22 @@
 import PageHeader from "@/components/PageHeader";
+import Stepper from "@/components/Stepper";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
 import { toast } from "sonner";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
-import { Phone } from "lucide-react";
+import { ChevronLeft } from "lucide-react";
 
 type Method = "treasurit" | "mtn" | "orange";
-
 const methods: { key: Method; label: string }[] = [
   { key: "treasurit", label: "Eduvest User" },
   { key: "mtn", label: "MTN MoMo" },
   { key: "orange", label: "Orange Money" },
 ];
+const STEPS = ["Method", "Recipient", "Confirm"];
 
 const SendMoney = () => {
+  const [step, setStep] = useState(0);
   const [method, setMethod] = useState<Method>("treasurit");
   const [recipient, setRecipient] = useState("");
   const [recipientName, setRecipientName] = useState("");
@@ -23,172 +24,122 @@ const SendMoney = () => {
   const [reason, setReason] = useState("");
   const [pin, setPin] = useState("");
 
-  const [phoneDialog, setPhoneDialog] = useState<null | "mtn" | "orange">(null);
-  const [phoneInput, setPhoneInput] = useState("");
-  const [nameInput, setNameInput] = useState("");
-
-  const selectMethod = (key: Method) => {
-    if (key === "mtn" || key === "orange") {
-      setPhoneInput(method === key ? recipient : "");
-      setNameInput(method === key ? recipientName : "");
-      setPhoneDialog(key);
-      return;
+  const validate = () => {
+    if (step === 1) {
+      if (method === "treasurit" && !recipient.trim()) { toast.error("Enter Eduvest account"); return false; }
+      if (method !== "treasurit") {
+        if (!/^\d{9}$/.test(recipient)) { toast.error("Enter a valid 9-digit number"); return false; }
+        if (!recipientName.trim()) { toast.error("Enter recipient name"); return false; }
+      }
     }
-    setMethod(key);
-    setRecipient("");
-    setRecipientName("");
+    if (step === 2) {
+      if (!amount || Number(amount) < 100) { toast.error("Minimum 100 FCFA"); return false; }
+      if (pin.length !== 4) { toast.error("Enter your 4-digit PIN"); return false; }
+    }
+    return true;
   };
 
-  const confirmPhone = () => {
-    const cleaned = phoneInput.replace(/\s+/g, "");
-    if (!/^\d{9}$/.test(cleaned)) {
-      toast.error("Enter a valid 9-digit phone number");
-      return;
-    }
-    if (!nameInput.trim()) {
-      toast.error("Enter the recipient's name");
-      return;
-    }
-    setMethod(phoneDialog!);
-    setRecipient(cleaned);
-    setRecipientName(nameInput.trim());
-    setPhoneDialog(null);
-  };
+  const next = () => { if (validate()) setStep((s) => Math.min(s + 1, STEPS.length - 1)); };
+  const back = () => setStep((s) => Math.max(0, s - 1));
 
-  const handleSend = () => {
-    if (!recipient || !amount) {
-      toast.error("Please fill recipient and amount");
-      return;
-    }
-    if (Number(amount) < 100) {
-      toast.error("Minimum amount is 100 FCFA");
-      return;
-    }
-    if (pin.length !== 4) {
-      toast.error("Enter your 4-digit PIN");
-      return;
-    }
+  const send = () => {
+    if (!validate()) return;
     const target = recipientName ? `${recipientName} (+237 ${recipient})` : recipient;
     toast.success(`${Number(amount).toLocaleString()} FCFA sent to ${target}`);
-    setRecipient("");
-    setRecipientName("");
-    setAmount("");
-    setReason("");
-    setPin("");
+    setStep(0); setRecipient(""); setRecipientName(""); setAmount(""); setReason(""); setPin("");
   };
 
   return (
     <div className="min-h-screen bg-background pb-20">
       <div className="max-w-md mx-auto px-4 pt-6 animate-fade-in">
-        <PageHeader title="Send Money" subtitle="Transfer funds securely" />
+        <PageHeader title="Send Money" subtitle={`Step ${step + 1} of ${STEPS.length}`} />
+        <Stepper steps={STEPS} current={step} />
 
-        <div className="space-y-5">
+        {step === 0 && (
           <div>
             <Label className="text-sm font-semibold mb-2 block">How do you want to send?</Label>
-            <div className="grid grid-cols-3 gap-2">
-              {methods.map((m) => {
-                const active = method === m.key;
-                return (
-                  <button
-                    key={m.key}
-                    onClick={() => selectMethod(m.key)}
-                    className={`text-xs font-semibold p-3 rounded-xl border transition-all ${
-                      active ? "border-primary bg-primary/5" : "border-border bg-card"
-                    }`}
-                  >
-                    {m.label}
-                  </button>
-                );
-              })}
+            <div className="space-y-2">
+              {methods.map((m) => (
+                <button
+                  key={m.key}
+                  onClick={() => { setMethod(m.key); setRecipient(""); setRecipientName(""); }}
+                  className={`w-full p-4 rounded-xl border text-left text-sm font-semibold ${
+                    method === m.key ? "border-primary bg-primary/5 text-primary" : "border-border bg-card"
+                  }`}
+                >
+                  {m.label}
+                </button>
+              ))}
             </div>
-            {(method === "mtn" || method === "orange") && recipient && (
-              <p className="text-xs text-muted-foreground mt-2">
-                Recipient: <span className="font-semibold text-foreground">{recipientName}</span> · +237 {recipient}
-              </p>
+          </div>
+        )}
+
+        {step === 1 && (
+          <div className="space-y-4">
+            {method === "treasurit" ? (
+              <div>
+                <Label className="text-sm font-semibold">Eduvest account</Label>
+                <Input placeholder="Search by name, @username or phone" value={recipient} onChange={(e) => setRecipient(e.target.value)} className="mt-1.5 h-12" />
+                <p className="text-xs text-muted-foreground mt-1">Tip: names aren't unique — use a username or phone.</p>
+              </div>
+            ) : (
+              <>
+                <div>
+                  <Label className="text-sm font-semibold">Phone number</Label>
+                  <div className="flex items-center gap-2 mt-1.5">
+                    <span className="text-sm font-semibold text-muted-foreground">+237</span>
+                    <Input type="tel" inputMode="numeric" maxLength={9} placeholder="6XX XXX XXX" value={recipient} onChange={(e) => setRecipient(e.target.value.replace(/\D/g, ""))} className="h-12" />
+                  </div>
+                </div>
+                <div>
+                  <Label className="text-sm font-semibold">Recipient name</Label>
+                  <Input placeholder="Full name on the account" value={recipientName} onChange={(e) => setRecipientName(e.target.value)} className="mt-1.5 h-11" />
+                </div>
+              </>
             )}
           </div>
+        )}
 
-          {method === "treasurit" && (
+        {step === 2 && (
+          <div className="space-y-4">
             <div>
-              <Label className="text-sm font-semibold">Eduvest account</Label>
-              <Input
-                placeholder="Search by name, @username or phone"
-                value={recipient}
-                onChange={(e) => setRecipient(e.target.value)}
-                className="mt-1.5"
-              />
-              <p className="text-xs text-muted-foreground mt-1">
-                Tip: names aren't unique — use a username or phone for accuracy.
-              </p>
+              <Label className="text-sm font-semibold">Amount (FCFA)</Label>
+              <Input type="number" placeholder="Enter amount" value={amount} onChange={(e) => setAmount(e.target.value)} className="mt-1.5 text-lg font-bold h-12" />
             </div>
+            <div>
+              <Label className="text-sm font-semibold">Reason (Optional)</Label>
+              <Input placeholder="e.g. Family, Business" value={reason} onChange={(e) => setReason(e.target.value)} className="mt-1.5" />
+            </div>
+            <div>
+              <Label className="text-sm font-semibold">PIN Code</Label>
+              <Input type="password" maxLength={4} placeholder="••••" value={pin} onChange={(e) => setPin(e.target.value)} className="mt-1.5 text-center text-xl tracking-[1em] h-12" />
+            </div>
+            <div className="bg-muted rounded-xl p-3 text-xs space-y-1">
+              <Row k="Method" v={methods.find((m) => m.key === method)!.label} />
+              <Row k="Recipient" v={recipientName ? `${recipientName} · ${method !== "treasurit" ? "+237 " : ""}${recipient}` : recipient} />
+            </div>
+          </div>
+        )}
+
+        <div className="flex gap-3 mt-6">
+          {step > 0 && (
+            <Button variant="outline" onClick={back} className="flex-1 h-12">
+              <ChevronLeft size={18} className="mr-1" /> Back
+            </Button>
           )}
-
-          <div>
-            <Label className="text-sm font-semibold">Amount (FCFA)</Label>
-            <Input type="number" placeholder="Enter amount" value={amount} onChange={(e) => setAmount(e.target.value)} className="mt-1.5 text-lg font-bold h-12" />
-          </div>
-
-          <div>
-            <Label className="text-sm font-semibold">Reason (Optional)</Label>
-            <Input placeholder="e.g. Family, Business" value={reason} onChange={(e) => setReason(e.target.value)} className="mt-1.5" />
-          </div>
-
-          <div>
-            <Label className="text-sm font-semibold">PIN Code</Label>
-            <Input type="password" maxLength={4} placeholder="••••" value={pin} onChange={(e) => setPin(e.target.value)} className="mt-1.5 text-center text-xl tracking-[1em] h-12" />
-          </div>
-
-          <Button onClick={handleSend} className="w-full h-12 text-base font-bold gradient-primary text-primary-foreground">
-            Send Money
-          </Button>
+          {step < STEPS.length - 1 ? (
+            <Button onClick={next} className="flex-1 h-12 gradient-primary text-primary-foreground font-bold">Continue</Button>
+          ) : (
+            <Button onClick={send} className="flex-1 h-12 gradient-primary text-primary-foreground font-bold">Send Money</Button>
+          )}
         </div>
       </div>
-
-      <Dialog open={!!phoneDialog} onOpenChange={(o) => { if (!o) setPhoneDialog(null); }}>
-        <DialogContent className="max-w-sm">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <Phone size={18} className="text-primary" />
-              {phoneDialog === "mtn" ? "MTN MoMo Recipient" : "Orange Money Recipient"}
-            </DialogTitle>
-            <DialogDescription>Enter the recipient's phone number and name.</DialogDescription>
-          </DialogHeader>
-          <div className="space-y-3">
-            <div>
-              <Label className="text-xs font-semibold">Phone number</Label>
-              <div className="flex items-center gap-2 mt-1">
-                <span className="text-sm font-semibold text-muted-foreground">+237</span>
-                <Input
-                  type="tel"
-                  inputMode="numeric"
-                  maxLength={9}
-                  placeholder="6XX XXX XXX"
-                  value={phoneInput}
-                  onChange={(e) => setPhoneInput(e.target.value.replace(/\D/g, ""))}
-                  className="h-12 text-base font-semibold tracking-wider"
-                  autoFocus
-                />
-              </div>
-            </div>
-            <div>
-              <Label className="text-xs font-semibold">Recipient name</Label>
-              <Input
-                placeholder="Full name on the account"
-                value={nameInput}
-                onChange={(e) => setNameInput(e.target.value)}
-                className="mt-1 h-11"
-                maxLength={80}
-              />
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setPhoneDialog(null)}>Cancel</Button>
-            <Button onClick={confirmPhone} className="gradient-primary text-primary-foreground">Continue</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 };
+
+const Row = ({ k, v }: { k: string; v: string }) => (
+  <div className="flex justify-between"><span className="text-muted-foreground">{k}</span><span className="font-bold text-right max-w-[60%] truncate">{v}</span></div>
+);
 
 export default SendMoney;

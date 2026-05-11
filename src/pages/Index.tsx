@@ -32,14 +32,86 @@ const SERVICES = [
   { icon: Wallet, label: "Salary Payment", desc: "Pay staff salaries securely with full payslips & records.", path: "/send", tone: "bg-secondary/10 text-secondary" },
 ];
 
-const COMMUNITY = [
-  { icon: Users, label: "Parents", desc: "Pay & track" },
-  { icon: GraduationCap, label: "Teachers", desc: "Offer & earn" },
-  { icon: BookOpen, label: "Students", desc: "Learn & grow" },
-  { icon: Building2, label: "Schools", desc: "Manage & grow" },
-  { icon: HomeIconLucide, label: "Tenants/Landlords", desc: "Rent & track" },
-  { icon: Briefcase, label: "Business Owners", desc: "Pay staff" },
-  { icon: UserCog, label: "Employees", desc: "Earn & save" },
+interface CommunityMember {
+  icon: any;
+  label: string;
+  desc: string;
+  cases: string[];
+}
+
+const COMMUNITY: CommunityMember[] = [
+  {
+    icon: Users, label: "Parents", desc: "Pay & track",
+    cases: [
+      "Pay school fees & download receipts",
+      "Track your child's attendance & results",
+      "Connect directly with school administration",
+      "Book private lessons for your child",
+      "Get quick loans (emergency, tuition, books, housing)",
+      "Save for your child's future",
+      "AI assistant for homework help (works offline) & free messaging",
+    ],
+  },
+  {
+    icon: GraduationCap, label: "Teachers", desc: "Offer & earn",
+    cases: [
+      "List your subjects & receive booking requests",
+      "Get paid securely after every lesson",
+      "Build a verified profile with parent reviews",
+      "Use the offline AI assistant to prepare lessons",
+      "Save earnings & access loans against income history",
+    ],
+  },
+  {
+    icon: BookOpen, label: "Students", desc: "Learn & grow",
+    cases: [
+      "Book private lessons with verified tutors",
+      "Use offline AI tutor for homework & exam prep",
+      "Save pocket money & set goals (laptop, internship)",
+      "Get a personal Trust Score that unlocks scholarships & loans",
+      "Send & receive money for free with classmates",
+    ],
+  },
+  {
+    icon: Building2, label: "Schools", desc: "Manage & grow",
+    cases: [
+      "Collect fees online with auto-reconciliation & receipts",
+      "Smart attendance management & tracking",
+      "Payroll management for staff salaries",
+      "Pay rent & utilities from one dashboard",
+      "Access institutional loans based on Trust Score",
+      "Built-in AI assistant for staff & students",
+    ],
+  },
+  {
+    icon: HomeIconLucide, label: "Tenants & Landlords", desc: "Rent & track",
+    cases: [
+      "Tenants pay rent on time and build credit history",
+      "Landlords receive instant payment confirmations",
+      "Auto-generated rent receipts every month",
+      "Trust Score unlocks better housing deals & loans",
+    ],
+  },
+  {
+    icon: Briefcase, label: "Business Owners / SMEs", desc: "Pay staff",
+    cases: [
+      "Run payroll for employees with one tap",
+      "Pay suppliers via MTN, Orange or Eduvest Wallet",
+      "Track expenses & download tax-ready receipts",
+      "Access SME loans backed by your Trust Score",
+      "Smart attendance tracking for your team",
+    ],
+  },
+  {
+    icon: UserCog, label: "Employees", desc: "Earn & save",
+    cases: [
+      "Receive salary directly into Eduvest Wallet",
+      "Auto-save a % of every paycheck",
+      "Pay rent, school fees & insurance from salary",
+      "Get salary advances based on payment history",
+      "Build a Trust Score that follows you across jobs",
+    ],
+  },
 ];
 
 const Index = () => {
@@ -49,6 +121,8 @@ const Index = () => {
   const [sendOpen, setSendOpen] = useState(false);
   const [servicesOpen, setServicesOpen] = useState(false);
   const [communityOpen, setCommunityOpen] = useState(false);
+  const [notifOpen, setNotifOpen] = useState(false);
+  const [activeMember, setActiveMember] = useState<CommunityMember | null>(null);
 
   const visibleServices = SERVICES.slice(0, 3);
   const visibleCommunity = COMMUNITY.slice(0, 4);
@@ -60,7 +134,7 @@ const Index = () => {
         <header className="flex items-center justify-between">
           <img src={logo} alt="Eduvest logo" className="h-12 w-auto" width={1536} height={1024} />
           <div className="flex items-center gap-3">
-            <button className="relative p-2 rounded-full hover:bg-muted">
+            <button onClick={() => setNotifOpen(true)} className="relative p-2 rounded-full hover:bg-muted active:scale-95 transition" aria-label="Notifications">
               <Bell size={20} className="text-secondary" />
               <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-primary rounded-full" />
             </button>
@@ -147,7 +221,7 @@ const Index = () => {
             {visibleCommunity.map((c) => (
               <button
                 key={c.label}
-                onClick={() => navigate("/lessons")}
+                onClick={() => setActiveMember(c)}
                 className="flex flex-col items-center gap-1 p-2 rounded-xl hover:bg-muted transition"
               >
                 <div className="w-11 h-11 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
@@ -249,7 +323,7 @@ const Index = () => {
             {COMMUNITY.map((c) => (
               <button
                 key={c.label}
-                onClick={() => { setCommunityOpen(false); navigate("/lessons"); }}
+                onClick={() => { setCommunityOpen(false); setActiveMember(c); }}
                 className="flex flex-col items-center gap-1.5 p-2 rounded-xl hover:bg-muted"
               >
                 <div className="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
@@ -258,6 +332,59 @@ const Index = () => {
                 <span className="text-[10px] font-bold text-center leading-tight">{c.label}</span>
                 <span className="text-[9px] text-muted-foreground text-center">{c.desc}</span>
               </button>
+            ))}
+          </div>
+        </SheetContent>
+      </Sheet>
+
+      {/* Community use-case sheet */}
+      <Sheet open={!!activeMember} onOpenChange={(o) => { if (!o) setActiveMember(null); }}>
+        <SheetContent side="bottom" className="rounded-t-2xl max-w-md mx-auto max-h-[85vh] overflow-y-auto">
+          {activeMember && (
+            <>
+              <SheetHeader>
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+                    <activeMember.icon size={22} />
+                  </div>
+                  <div className="text-left">
+                    <SheetTitle className="text-secondary">{activeMember.label}</SheetTitle>
+                    <p className="text-[11px] text-muted-foreground">How Eduvest helps you</p>
+                  </div>
+                </div>
+              </SheetHeader>
+              <ul className="space-y-2 mt-4">
+                {activeMember.cases.map((u, i) => (
+                  <li key={i} className="flex items-start gap-3 p-3 bg-card border border-border rounded-xl">
+                    <div className="w-6 h-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-[11px] font-bold flex-shrink-0">
+                      {i + 1}
+                    </div>
+                    <span className="text-xs leading-relaxed text-foreground">{u}</span>
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
+        </SheetContent>
+      </Sheet>
+
+      {/* Notifications sheet */}
+      <Sheet open={notifOpen} onOpenChange={setNotifOpen}>
+        <SheetContent side="bottom" className="rounded-t-2xl max-w-md mx-auto max-h-[80vh] overflow-y-auto">
+          <SheetHeader><SheetTitle className="text-secondary">Notifications</SheetTitle></SheetHeader>
+          <div className="space-y-2 mt-4">
+            {[
+              { t: "Trust Score updated", d: "+15 pts after your last fee payment.", time: "2h" },
+              { t: "Rent due in 3 days", d: "Mr Eyong Tabi · 85,000 FCFA", time: "1d" },
+              { t: "New tutor available", d: "Mr Fombu added Saturday slots.", time: "2d" },
+            ].map((n, i) => (
+              <div key={i} className="p-3 bg-card border border-border rounded-xl">
+                <div className="flex justify-between items-start">
+                  <p className="text-xs font-bold">{n.t}</p>
+                  <span className="text-[10px] text-muted-foreground">{n.time}</span>
+                </div>
+                <p className="text-[11px] text-muted-foreground mt-0.5">{n.d}</p>
+              </div>
             ))}
           </div>
         </SheetContent>
