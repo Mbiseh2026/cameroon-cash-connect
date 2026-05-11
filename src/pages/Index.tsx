@@ -336,6 +336,59 @@ const Index = () => {
           </div>
         </SheetContent>
       </Sheet>
+
+      {/* Community use-case sheet */}
+      <Sheet open={!!activeMember} onOpenChange={(o) => { if (!o) setActiveMember(null); }}>
+        <SheetContent side="bottom" className="rounded-t-2xl max-w-md mx-auto max-h-[85vh] overflow-y-auto">
+          {activeMember && (
+            <>
+              <SheetHeader>
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+                    <activeMember.icon size={22} />
+                  </div>
+                  <div className="text-left">
+                    <SheetTitle className="text-secondary">{activeMember.label}</SheetTitle>
+                    <p className="text-[11px] text-muted-foreground">How Eduvest helps you</p>
+                  </div>
+                </div>
+              </SheetHeader>
+              <ul className="space-y-2 mt-4">
+                {activeMember.cases.map((u, i) => (
+                  <li key={i} className="flex items-start gap-3 p-3 bg-card border border-border rounded-xl">
+                    <div className="w-6 h-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-[11px] font-bold flex-shrink-0">
+                      {i + 1}
+                    </div>
+                    <span className="text-xs leading-relaxed text-foreground">{u}</span>
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
+        </SheetContent>
+      </Sheet>
+
+      {/* Notifications sheet */}
+      <Sheet open={notifOpen} onOpenChange={setNotifOpen}>
+        <SheetContent side="bottom" className="rounded-t-2xl max-w-md mx-auto max-h-[80vh] overflow-y-auto">
+          <SheetHeader><SheetTitle className="text-secondary">Notifications</SheetTitle></SheetHeader>
+          <div className="space-y-2 mt-4">
+            {[
+              { t: "Trust Score updated", d: "+15 pts after your last fee payment.", time: "2h" },
+              { t: "Rent due in 3 days", d: "Mr Eyong Tabi · 85,000 FCFA", time: "1d" },
+              { t: "New tutor available", d: "Mr Fombu added Saturday slots.", time: "2d" },
+            ].map((n, i) => (
+              <div key={i} className="p-3 bg-card border border-border rounded-xl">
+                <div className="flex justify-between items-start">
+                  <p className="text-xs font-bold">{n.t}</p>
+                  <span className="text-[10px] text-muted-foreground">{n.time}</span>
+                </div>
+                <p className="text-[11px] text-muted-foreground mt-0.5">{n.d}</p>
+              </div>
+            ))}
+          </div>
+        </SheetContent>
+      </Sheet>
     </div>
   );
 };
