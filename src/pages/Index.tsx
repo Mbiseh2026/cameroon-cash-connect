@@ -221,7 +221,7 @@ const Index = () => {
             {visibleCommunity.map((c) => (
               <button
                 key={c.label}
-                onClick={() => navigate("/lessons")}
+                onClick={() => setActiveMember(c)}
                 className="flex flex-col items-center gap-1 p-2 rounded-xl hover:bg-muted transition"
               >
                 <div className="w-11 h-11 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
@@ -323,7 +323,7 @@ const Index = () => {
             {COMMUNITY.map((c) => (
               <button
                 key={c.label}
-                onClick={() => { setCommunityOpen(false); navigate("/lessons"); }}
+                onClick={() => { setCommunityOpen(false); setActiveMember(c); }}
                 className="flex flex-col items-center gap-1.5 p-2 rounded-xl hover:bg-muted"
               >
                 <div className="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
