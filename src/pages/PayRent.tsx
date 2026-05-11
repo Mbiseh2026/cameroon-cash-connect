@@ -1,12 +1,12 @@
 import PageHeader from "@/components/PageHeader";
+import Stepper from "@/components/Stepper";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
 import { toast } from "sonner";
 import { downloadReceipt, genRef } from "@/lib/receipt";
-import { Home, MapPin, CalendarDays, AlertTriangle, UserPlus, CheckCircle2, Download, History as HistoryIcon } from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Home, MapPin, CalendarDays, CheckCircle2, Download, ChevronLeft } from "lucide-react";
 
 const PROPERTIES = [
   { id: "p1", landlord: "Mr Eyong Tabi", address: "Bonamoussadi, Douala — 2-bed apartment", rent: 85000, due: "May 15, 2026", paidPct: 60 },
@@ -20,29 +20,34 @@ const METHODS = [
 ] as const;
 type Method = typeof METHODS[number]["key"];
 
+const STEPS = ["Property", "Amount", "Pay"];
+
 const PayRent = () => {
+  const [step, setStep] = useState(0);
   const [propId, setPropId] = useState(PROPERTIES[0].id);
   const [amount, setAmount] = useState("");
   const [method, setMethod] = useState<Method>("mtn");
   const [phone, setPhone] = useState("");
   const [pin, setPin] = useState("");
-  const [confirmOpen, setConfirmOpen] = useState(false);
   const [done, setDone] = useState<null | { ref: string; amt: number }>(null);
-  const [inviteOpen, setInviteOpen] = useState(false);
 
   const property = PROPERTIES.find((p) => p.id === propId)!;
-  const isLate = false;
 
-  const submit = () => {
-    if (!amount) return toast.error("Enter amount");
-    if (method !== "wallet" && !/^\d{9}$/.test(phone)) return toast.error("Enter a valid 9-digit number");
-    if (pin.length !== 4) return toast.error("Enter your 4-digit PIN");
-    setConfirmOpen(true);
+  const validate = () => {
+    if (step === 1 && (!amount || Number(amount) < 500)) { toast.error("Minimum 500 FCFA"); return false; }
+    if (step === 2) {
+      if (method !== "wallet" && !/^\d{9}$/.test(phone)) { toast.error("Enter a valid 9-digit number"); return false; }
+      if (pin.length !== 4) { toast.error("Enter your 4-digit PIN"); return false; }
+    }
+    return true;
   };
 
-  const confirmPay = () => {
+  const next = () => { if (validate()) setStep((s) => Math.min(s + 1, STEPS.length - 1)); };
+  const back = () => setStep((s) => Math.max(0, s - 1));
+
+  const pay = () => {
+    if (!validate()) return;
     const ref = genRef("RNT");
-    setConfirmOpen(false);
     setDone({ ref, amt: Number(amount) });
     toast.success("Rent paid — Trust Score +20 pts");
   };
@@ -78,7 +83,7 @@ const PayRent = () => {
           <Button onClick={downloadPdf} className="w-full h-12 gradient-primary text-primary-foreground">
             <Download size={18} className="mr-2" /> Download Receipt (PDF)
           </Button>
-          <Button variant="outline" onClick={() => setDone(null)} className="w-full h-11 mt-2">
+          <Button variant="outline" onClick={() => { setDone(null); setStep(0); }} className="w-full h-11 mt-2">
             New Payment
           </Button>
         </div>
@@ -89,9 +94,10 @@ const PayRent = () => {
   return (
     <div className="min-h-screen bg-background pb-24">
       <div className="max-w-md mx-auto px-4 pt-6 animate-fade-in">
-        <PageHeader title="Pay Rent" subtitle="Track & build credit history" />
+        <PageHeader title="Pay Rent" subtitle={`Step ${step + 1} of ${STEPS.length}`} />
+        <Stepper steps={STEPS} current={step} />
 
-        <div className="space-y-4">
+        {step === 0 && (
           <div className="space-y-2">
             {PROPERTIES.map((p) => {
               const active = p.id === propId;
@@ -118,132 +124,77 @@ const PayRent = () => {
                           <CalendarDays size={11} /> Due {p.due}
                         </span>
                       </div>
-                      <div className="mt-2 h-1.5 bg-muted rounded-full overflow-hidden">
-                        <div className="h-full bg-primary" style={{ width: `${p.paidPct}%` }} />
-                      </div>
-                      <p className="text-[10px] text-muted-foreground mt-1">{p.paidPct}% of yearly rent paid</p>
                     </div>
                   </div>
                 </button>
               );
             })}
           </div>
+        )}
 
-          {isLate && (
-            <div className="flex items-center gap-2 bg-warning/10 text-warning border border-warning/30 rounded-xl p-3 text-xs font-semibold">
-              <AlertTriangle size={16} /> Payment is overdue. Late fees may apply.
-            </div>
-          )}
-
-          <div>
-            <Label className="text-sm font-semibold">Amount (FCFA)</Label>
-            <Input
-              type="number"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-              placeholder={String(property.rent)}
-              className="mt-1.5 text-lg font-bold h-12"
-            />
-            <button
-              type="button"
-              onClick={() => setAmount(String(property.rent))}
-              className="text-[11px] font-semibold text-primary mt-1"
-            >
-              Use full month: {property.rent.toLocaleString()} FCFA
-            </button>
-          </div>
-
-          <div>
-            <Label className="text-sm font-semibold mb-2 block">Payment method</Label>
-            <div className="grid grid-cols-3 gap-2">
-              {METHODS.map((m) => (
-                <button
-                  key={m.key}
-                  onClick={() => setMethod(m.key)}
-                  className={`text-xs font-semibold p-3 rounded-xl border ${
-                    method === m.key ? "border-primary bg-primary/5" : "border-border bg-card"
-                  }`}
-                >
-                  {m.label}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {method !== "wallet" && (
+        {step === 1 && (
+          <div className="space-y-4">
             <div>
-              <Label className="text-sm font-semibold">Mobile number</Label>
-              <div className="flex items-center gap-2 mt-1.5">
-                <span className="text-sm font-semibold text-muted-foreground">+237</span>
-                <Input
-                  type="tel"
-                  inputMode="numeric"
-                  maxLength={9}
-                  placeholder="6XX XXX XXX"
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value.replace(/\D/g, ""))}
-                  className="h-12"
-                />
+              <Label className="text-sm font-semibold">Amount (FCFA)</Label>
+              <Input type="number" value={amount} onChange={(e) => setAmount(e.target.value)} placeholder={String(property.rent)} className="mt-1.5 text-lg font-bold h-12" />
+              <button type="button" onClick={() => setAmount(String(property.rent))} className="text-[11px] font-semibold text-primary mt-1">
+                Use full month: {property.rent.toLocaleString()} FCFA
+              </button>
+            </div>
+          </div>
+        )}
+
+        {step === 2 && (
+          <div className="space-y-4">
+            <div>
+              <Label className="text-sm font-semibold mb-2 block">Payment method</Label>
+              <div className="grid grid-cols-3 gap-2">
+                {METHODS.map((m) => (
+                  <button
+                    key={m.key}
+                    onClick={() => setMethod(m.key)}
+                    className={`text-xs font-semibold p-3 rounded-xl border ${
+                      method === m.key ? "border-primary bg-primary/5" : "border-border bg-card"
+                    }`}
+                  >
+                    {m.label}
+                  </button>
+                ))}
               </div>
             </div>
+            {method !== "wallet" && (
+              <div>
+                <Label className="text-sm font-semibold">Mobile number</Label>
+                <div className="flex items-center gap-2 mt-1.5">
+                  <span className="text-sm font-semibold text-muted-foreground">+237</span>
+                  <Input type="tel" inputMode="numeric" maxLength={9} placeholder="6XX XXX XXX" value={phone} onChange={(e) => setPhone(e.target.value.replace(/\D/g, ""))} className="h-12" />
+                </div>
+              </div>
+            )}
+            <div>
+              <Label className="text-sm font-semibold">PIN Code</Label>
+              <Input type="password" maxLength={4} value={pin} onChange={(e) => setPin(e.target.value)} placeholder="••••" className="mt-1.5 text-center text-xl tracking-[1em] h-12" />
+            </div>
+            <div className="bg-muted rounded-xl p-3 text-xs space-y-1">
+              <Row k="Landlord" v={property.landlord} />
+              <Row k="Amount" v={`${Number(amount || 0).toLocaleString()} FCFA`} highlight />
+            </div>
+          </div>
+        )}
+
+        <div className="flex gap-3 mt-6">
+          {step > 0 && (
+            <Button variant="outline" onClick={back} className="flex-1 h-12">
+              <ChevronLeft size={18} className="mr-1" /> Back
+            </Button>
           )}
-
-          <div>
-            <Label className="text-sm font-semibold">PIN Code</Label>
-            <Input type="password" maxLength={4} value={pin} onChange={(e) => setPin(e.target.value)} placeholder="••••" className="mt-1.5 text-center text-xl tracking-[1em] h-12" />
-          </div>
-
-          <Button onClick={submit} className="w-full h-12 text-base font-bold gradient-primary text-primary-foreground">
-            Pay Rent
-          </Button>
-
-          <div className="grid grid-cols-2 gap-3 pt-2">
-            <button className="flex items-center gap-2 p-3 bg-card border border-border rounded-xl text-xs font-semibold">
-              <HistoryIcon size={16} className="text-primary" /> Payment History
-            </button>
-            <button onClick={() => setInviteOpen(true)} className="flex items-center gap-2 p-3 bg-card border border-border rounded-xl text-xs font-semibold">
-              <UserPlus size={16} className="text-secondary" /> Invite Landlord
-            </button>
-          </div>
+          {step < STEPS.length - 1 ? (
+            <Button onClick={next} className="flex-1 h-12 gradient-primary text-primary-foreground font-bold">Continue</Button>
+          ) : (
+            <Button onClick={pay} className="flex-1 h-12 gradient-primary text-primary-foreground font-bold">Pay Rent</Button>
+          )}
         </div>
       </div>
-
-      <Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>
-        <DialogContent className="max-w-sm">
-          <DialogHeader><DialogTitle>Confirm rent payment</DialogTitle></DialogHeader>
-          <div className="text-sm space-y-2">
-            <Row k="Landlord" v={property.landlord} />
-            <Row k="Property" v={property.address} />
-            <Row k="Amount" v={`${Number(amount || 0).toLocaleString()} FCFA`} highlight />
-            <Row k="Method" v={METHODS.find((m) => m.key === method)!.label} />
-          </div>
-          <Button onClick={confirmPay} className="w-full h-11 gradient-primary text-primary-foreground">
-            Confirm & Pay
-          </Button>
-        </DialogContent>
-      </Dialog>
-
-      <Dialog open={inviteOpen} onOpenChange={setInviteOpen}>
-        <DialogContent className="max-w-sm">
-          <DialogHeader><DialogTitle>Invite your landlord</DialogTitle></DialogHeader>
-          <p className="text-xs text-muted-foreground">
-            Send an invite so your landlord can receive payments and confirm receipts directly on Eduvest.
-          </p>
-          <div className="space-y-2">
-            <Input placeholder="Landlord phone (+237 ...)" />
-            <Input placeholder="Landlord name" />
-          </div>
-          <Button
-            onClick={() => {
-              toast.success("Invite sent");
-              setInviteOpen(false);
-            }}
-            className="gradient-primary text-primary-foreground"
-          >
-            Send Invite
-          </Button>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 };
