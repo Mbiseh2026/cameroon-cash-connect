@@ -32,14 +32,86 @@ const SERVICES = [
   { icon: Wallet, label: "Salary Payment", desc: "Pay staff salaries securely with full payslips & records.", path: "/send", tone: "bg-secondary/10 text-secondary" },
 ];
 
-const COMMUNITY = [
-  { icon: Users, label: "Parents", desc: "Pay & track" },
-  { icon: GraduationCap, label: "Teachers", desc: "Offer & earn" },
-  { icon: BookOpen, label: "Students", desc: "Learn & grow" },
-  { icon: Building2, label: "Schools", desc: "Manage & grow" },
-  { icon: HomeIconLucide, label: "Tenants/Landlords", desc: "Rent & track" },
-  { icon: Briefcase, label: "Business Owners", desc: "Pay staff" },
-  { icon: UserCog, label: "Employees", desc: "Earn & save" },
+interface CommunityMember {
+  icon: any;
+  label: string;
+  desc: string;
+  cases: string[];
+}
+
+const COMMUNITY: CommunityMember[] = [
+  {
+    icon: Users, label: "Parents", desc: "Pay & track",
+    cases: [
+      "Pay school fees & download receipts",
+      "Track your child's attendance & results",
+      "Connect directly with school administration",
+      "Book private lessons for your child",
+      "Get quick loans (emergency, tuition, books, housing)",
+      "Save for your child's future",
+      "AI assistant for homework help (works offline) & free messaging",
+    ],
+  },
+  {
+    icon: GraduationCap, label: "Teachers", desc: "Offer & earn",
+    cases: [
+      "List your subjects & receive booking requests",
+      "Get paid securely after every lesson",
+      "Build a verified profile with parent reviews",
+      "Use the offline AI assistant to prepare lessons",
+      "Save earnings & access loans against income history",
+    ],
+  },
+  {
+    icon: BookOpen, label: "Students", desc: "Learn & grow",
+    cases: [
+      "Book private lessons with verified tutors",
+      "Use offline AI tutor for homework & exam prep",
+      "Save pocket money & set goals (laptop, internship)",
+      "Get a personal Trust Score that unlocks scholarships & loans",
+      "Send & receive money for free with classmates",
+    ],
+  },
+  {
+    icon: Building2, label: "Schools", desc: "Manage & grow",
+    cases: [
+      "Collect fees online with auto-reconciliation & receipts",
+      "Smart attendance management & tracking",
+      "Payroll management for staff salaries",
+      "Pay rent & utilities from one dashboard",
+      "Access institutional loans based on Trust Score",
+      "Built-in AI assistant for staff & students",
+    ],
+  },
+  {
+    icon: HomeIconLucide, label: "Tenants & Landlords", desc: "Rent & track",
+    cases: [
+      "Tenants pay rent on time and build credit history",
+      "Landlords receive instant payment confirmations",
+      "Auto-generated rent receipts every month",
+      "Trust Score unlocks better housing deals & loans",
+    ],
+  },
+  {
+    icon: Briefcase, label: "Business Owners / SMEs", desc: "Pay staff",
+    cases: [
+      "Run payroll for employees with one tap",
+      "Pay suppliers via MTN, Orange or Eduvest Wallet",
+      "Track expenses & download tax-ready receipts",
+      "Access SME loans backed by your Trust Score",
+      "Smart attendance tracking for your team",
+    ],
+  },
+  {
+    icon: UserCog, label: "Employees", desc: "Earn & save",
+    cases: [
+      "Receive salary directly into Eduvest Wallet",
+      "Auto-save a % of every paycheck",
+      "Pay rent, school fees & insurance from salary",
+      "Get salary advances based on payment history",
+      "Build a Trust Score that follows you across jobs",
+    ],
+  },
 ];
 
 const Index = () => {
