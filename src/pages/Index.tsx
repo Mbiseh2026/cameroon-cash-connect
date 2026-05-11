@@ -121,6 +121,8 @@ const Index = () => {
   const [sendOpen, setSendOpen] = useState(false);
   const [servicesOpen, setServicesOpen] = useState(false);
   const [communityOpen, setCommunityOpen] = useState(false);
+  const [notifOpen, setNotifOpen] = useState(false);
+  const [activeMember, setActiveMember] = useState<CommunityMember | null>(null);
 
   const visibleServices = SERVICES.slice(0, 3);
   const visibleCommunity = COMMUNITY.slice(0, 4);
@@ -132,7 +134,7 @@ const Index = () => {
         <header className="flex items-center justify-between">
           <img src={logo} alt="Eduvest logo" className="h-12 w-auto" width={1536} height={1024} />
           <div className="flex items-center gap-3">
-            <button className="relative p-2 rounded-full hover:bg-muted">
+            <button onClick={() => setNotifOpen(true)} className="relative p-2 rounded-full hover:bg-muted active:scale-95 transition" aria-label="Notifications">
               <Bell size={20} className="text-secondary" />
               <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-primary rounded-full" />
             </button>
