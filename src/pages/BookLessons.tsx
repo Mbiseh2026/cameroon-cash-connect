@@ -1,10 +1,19 @@
 import PageHeader from "@/components/PageHeader";
-import { GraduationCap, Star, Calendar as CalendarIcon, Search, BadgeCheck, Video, MapPin, CheckCircle2 } from "lucide-react";
+import { GraduationCap, Star, Calendar as CalendarIcon, Search, BadgeCheck, Video, MapPin, CheckCircle2, Baby, BookOpen, School, University, ChevronLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useMemo, useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { toast } from "sonner";
+
+const CATEGORIES = [
+  { key: "nursery", label: "Nursery School", desc: "Ages 2–5 · Foundational play-based learning", icon: Baby },
+  { key: "primary", label: "Primary School", desc: "Class 1–6 · Core literacy & numeracy", icon: BookOpen },
+  { key: "secondary", label: "Secondary School", desc: "Form 1–5 · Subject teachers", icon: School },
+  { key: "high", label: "High School", desc: "Lower & Upper 6 · GCE / Bac prep", icon: GraduationCap },
+  { key: "tertiary", label: "Tertiary / Higher Institute", desc: "University & college coaching", icon: University },
+] as const;
+type CatKey = typeof CATEGORIES[number]["key"];
 
 interface Teacher {
   id: string;
