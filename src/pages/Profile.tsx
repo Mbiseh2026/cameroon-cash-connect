@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 
 const Profile = () => {
+  const navigate = useNavigate();
   const [dark, setDark] = useState(() => document.documentElement.classList.contains("dark"));
   const [lang, setLang] = useState(() => localStorage.getItem("lang") || "en");
 
