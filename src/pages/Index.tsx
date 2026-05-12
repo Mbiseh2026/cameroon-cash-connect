@@ -2,6 +2,7 @@ import {
   Bell, Wallet, PiggyBank, TrendingUp, GraduationCap, ChevronRight,
   SendHorizontal, Home as HomeIconLucide, ScanLine, BookOpen, Users,
   ArrowUpFromLine, Landmark, ShieldCheck, Briefcase, Building2, UserCog, MoreHorizontal,
+  CalendarCheck, CheckCircle2,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
