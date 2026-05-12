@@ -20,6 +20,7 @@ import Rewards from "./pages/Rewards";
 import Profile from "./pages/Profile";
 import Insurance from "./pages/Insurance";
 import BookLessons from "./pages/BookLessons";
+import Attendance from "./pages/Attendance";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -45,6 +46,7 @@ const App = () => (
           <Route path="/business-loan" element={<BusinessLoan />} />
           <Route path="/tfunds" element={<TFunds />} />
           <Route path="/history" element={<History />} />
+          <Route path="/attendance" element={<Attendance />} />
           <Route path="/rewards" element={<Rewards />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="*" element={<NotFound />} />

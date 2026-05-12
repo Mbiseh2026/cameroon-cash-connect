@@ -2,6 +2,7 @@ import {
   Bell, Wallet, PiggyBank, TrendingUp, GraduationCap, ChevronRight,
   SendHorizontal, Home as HomeIconLucide, ScanLine, BookOpen, Users,
   ArrowUpFromLine, Landmark, ShieldCheck, Briefcase, Building2, UserCog, MoreHorizontal,
+  CalendarCheck, CheckCircle2,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
@@ -229,6 +230,34 @@ const Index = () => {
                 </div>
                 <span className="text-[10px] font-bold text-center leading-tight">{c.label}</span>
               </button>
+            ))}
+          </div>
+        </section>
+
+        {/* Attendance preview */}
+        <section className="bg-card border border-border rounded-2xl p-4">
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2">
+              <CalendarCheck size={16} className="text-primary" />
+              <h2 className="text-sm font-bold text-secondary">Today's Attendance</h2>
+            </div>
+            <button onClick={() => navigate("/attendance")} className="text-xs font-semibold text-primary">View all</button>
+          </div>
+          <div className="space-y-2">
+            {[
+              { name: "Marie Nguema", who: "Form 3 · Gate A", time: "07:42" },
+              { name: "Junior Nguema", who: "Class 5 · Gate B", time: "08:14" },
+            ].map((a) => (
+              <div key={a.name} className="flex items-center gap-3 p-2.5 rounded-lg bg-muted/40">
+                <div className="w-8 h-8 rounded-full bg-success/10 text-success flex items-center justify-center">
+                  <CheckCircle2 size={16} />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-semibold truncate">{a.name}</p>
+                  <p className="text-[10px] text-muted-foreground">Arrived at {a.who}</p>
+                </div>
+                <span className="text-[11px] font-bold">{a.time}</span>
+              </div>
             ))}
           </div>
         </section>
