@@ -10,10 +10,6 @@ const navItems = [
   { icon: ShieldCheck, label: "Insurance", path: "/insurance" },
   { icon: User, label: "Profile", path: "/profile" },
 ];
-  { icon: ScanLine, label: "Pay", path: "#pay", center: true },
-  { icon: ShieldCheck, label: "Insurance", path: "/insurance" },
-  { icon: User, label: "Profile", path: "/profile" },
-];
 
 const PAY_OPTIONS = [
   { icon: GraduationCap, label: "Pay Tuition Fees", desc: "School fees & receipts", path: "/pay-fees", tone: "bg-primary/10 text-primary" },
