@@ -20,6 +20,7 @@ import Rewards from "./pages/Rewards";
 import Profile from "./pages/Profile";
 import Insurance from "./pages/Insurance";
 import BookLessons from "./pages/BookLessons";
+import Attendance from "./pages/Attendance";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
