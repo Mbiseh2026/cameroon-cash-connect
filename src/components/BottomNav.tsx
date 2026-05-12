@@ -1,11 +1,15 @@
-import { Home, ListChecks, ScanLine, ShieldCheck, User, GraduationCap, HomeIcon, Wallet, ShieldCheck as Shield2 } from "lucide-react";
+import { Home, CalendarCheck, ScanLine, ShieldCheck, User, GraduationCap, HomeIcon, Wallet, ShieldCheck as Shield2 } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 
 const navItems = [
   { icon: Home, label: "Home", path: "/" },
-  { icon: ListChecks, label: "Transactions", path: "/history" },
+  { icon: CalendarCheck, label: "Attendance", path: "/attendance" },
+  { icon: ScanLine, label: "Pay", path: "#pay", center: true },
+  { icon: ShieldCheck, label: "Insurance", path: "/insurance" },
+  { icon: User, label: "Profile", path: "/profile" },
+];
   { icon: ScanLine, label: "Pay", path: "#pay", center: true },
   { icon: ShieldCheck, label: "Insurance", path: "/insurance" },
   { icon: User, label: "Profile", path: "/profile" },
