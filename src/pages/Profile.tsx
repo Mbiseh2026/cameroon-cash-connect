@@ -1,5 +1,6 @@
 import PageHeader from "@/components/PageHeader";
-import { User, Shield, Bell, LogOut, Sun, Moon, Languages } from "lucide-react";
+import { User, Shield, Bell, LogOut, Sun, Moon, Languages, ListChecks } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 
 const Profile = () => {
