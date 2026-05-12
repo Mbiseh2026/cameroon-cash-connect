@@ -42,6 +42,15 @@ const Profile = () => {
 
 
         <div className="space-y-2">
+          <button
+            onClick={() => navigate("/history")}
+            className="w-full flex items-center gap-3 bg-card border border-border rounded-xl p-4 hover:bg-muted transition-colors"
+          >
+            <ListChecks size={18} className="text-primary" />
+            <span className="text-sm font-semibold">My Transactions</span>
+            <span className="ml-auto text-[10px] text-muted-foreground">View history</span>
+          </button>
+
           {[
             { icon: User, label: "Personal Information" },
             { icon: Shield, label: "Security & PIN" },
