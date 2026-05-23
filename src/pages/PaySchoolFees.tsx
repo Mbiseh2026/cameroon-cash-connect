@@ -7,12 +7,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import { downloadReceipt, genRef } from "@/lib/receipt";
-import { CheckCircle2, Download, ChevronLeft } from "lucide-react";
+import { CheckCircle2, Download, ChevronLeft, PlusCircle } from "lucide-react";
 
-const SCHOOLS = [
+interface School { id: string; name: string; balance?: number; logoUrl?: string; }
+const SCHOOLS: School[] = [
   { id: "saker", name: "Saker Baptist College", balance: 250000 },
   { id: "sasse", name: "St Joseph's College Sasse", balance: 180000 },
-  { id: "lyceebil", name: "Lycée Bilingue de Yaoundé", balance: 95000 },
+  { id: "lyceebil", name: "Lycée Bilingue de Yaoundé" }, // no balance in DB
   { id: "buea-uni", name: "University of Buea", balance: 420000 },
 ];
 
@@ -32,54 +33,59 @@ const METHODS = [
 ] as const;
 type Method = typeof METHODS[number]["key"];
 
-const STEPS = ["School", "Student", "Amount", "Pay"];
+const STEPS = ["School", "Level", "Student", "Amount", "Pay"];
 
 const PaySchoolFees = () => {
   const [step, setStep] = useState(0);
 
   // Step 1
   const [schoolId, setSchoolId] = useState("");
+  const [manualMode, setManualMode] = useState(false);
+  const [manualSchool, setManualSchool] = useState("");
   // Step 2
   const [level, setLevel] = useState<LevelKey | "">("");
+  // Step 3
   const [studentName, setStudentName] = useState("");
   const [studentId, setStudentId] = useState("");
   const [classOrYear, setClassOrYear] = useState("");
   const [faculty, setFaculty] = useState("");
   const [department, setDepartment] = useState("");
-  // Step 3
+  // Step 4
   const [amount, setAmount] = useState("");
   const [installment, setInstallment] = useState(false);
-  // Step 4
+  // Step 5
   const [method, setMethod] = useState<Method>("mtn");
   const [phone, setPhone] = useState("");
   const [pin, setPin] = useState("");
 
   const [done, setDone] = useState<null | { ref: string; amt: number }>(null);
 
-  const school = useMemo(() => SCHOOLS.find((s) => s.id === schoolId), [schoolId]);
-  const remaining = school ? Math.max(0, school.balance - Number(amount || 0)) : 0;
+  const school: School | undefined = useMemo(() => {
+    if (manualMode) return manualSchool ? { id: "manual", name: manualSchool } : undefined;
+    return SCHOOLS.find((s) => s.id === schoolId);
+  }, [schoolId, manualMode, manualSchool]);
+
   const isTertiary = level === "tertiary";
   const showFaculty = isTertiary;
   const classLabel = isTertiary ? "Year / Level" : level === "high" ? "Class (e.g. Upper 6 Sci)" : "Class";
+  const hasBalance = typeof school?.balance === "number";
+  const remaining = hasBalance ? Math.max(0, (school!.balance || 0) - Number(amount || 0)) : 0;
 
   const validateStep = (): boolean => {
     if (step === 0) {
-      if (!schoolId) { toast.error("Select a school"); return false; }
+      if (manualMode) {
+        if (!manualSchool.trim()) { toast.error("Enter the school name"); return false; }
+      } else if (!schoolId) { toast.error("Select a school"); return false; }
     }
-    if (step === 1) {
-      if (!level) { toast.error("Select level of education"); return false; }
+    if (step === 1 && !level) { toast.error("Select level of education"); return false; }
+    if (step === 2) {
       if (!studentName.trim()) { toast.error("Enter student name"); return false; }
       if (!studentId.trim()) { toast.error("Enter student ID"); return false; }
       if (!classOrYear.trim()) { toast.error(`Enter ${classLabel.toLowerCase()}`); return false; }
-      if (showFaculty && (!faculty.trim() || !department.trim())) {
-        toast.error("Enter faculty and department");
-        return false;
-      }
+      if (showFaculty && (!faculty.trim() || !department.trim())) { toast.error("Enter faculty and department"); return false; }
     }
-    if (step === 2) {
-      if (!amount || Number(amount) < 500) { toast.error("Minimum 500 FCFA"); return false; }
-    }
-    if (step === 3) {
+    if (step === 3 && (!amount || Number(amount) < 500)) { toast.error("Minimum 500 FCFA"); return false; }
+    if (step === 4) {
       if (method !== "wallet" && !/^\d{9}$/.test(phone)) { toast.error("Enter a valid 9-digit number"); return false; }
       if (pin.length !== 4) { toast.error("Enter your 4-digit PIN"); return false; }
     }
@@ -112,14 +118,18 @@ const PaySchoolFees = () => {
       rows.push({ label: "Department", value: department });
     }
     rows.push({ label: "Method", value: METHODS.find((m) => m.key === method)!.label });
-    rows.push({ label: "Outstanding before", value: `${school.balance.toLocaleString()} FCFA` });
-    rows.push({ label: "Outstanding after", value: `${remaining.toLocaleString()} FCFA` });
+    if (hasBalance) {
+      rows.push({ label: "Outstanding before", value: `${school.balance!.toLocaleString()} FCFA` });
+      rows.push({ label: "Outstanding after", value: `${remaining.toLocaleString()} FCFA` });
+    }
     rows.push({ label: "Plan", value: installment ? "Installment" : "Full payment" });
     downloadReceipt({
       title: "School Fees Receipt",
       reference: done.ref,
       amount: `${done.amt.toLocaleString()} FCFA`,
       rows,
+      logoUrl: school.logoUrl,
+      organization: school.name,
     });
   };
 
@@ -142,15 +152,13 @@ const PaySchoolFees = () => {
             {showFaculty && <Row k="Faculty" v={faculty} />}
             {showFaculty && <Row k="Department" v={department} />}
             <Row k="Method" v={METHODS.find((m) => m.key === method)!.label} />
-            <Row k="Outstanding" v={`${remaining.toLocaleString()} FCFA`} />
+            {hasBalance && <Row k="Outstanding" v={`${remaining.toLocaleString()} FCFA`} />}
             <Row k="Trust Score" v="+15 pts" highlight />
           </div>
           <Button onClick={downloadPdf} className="w-full h-12 gradient-primary text-primary-foreground">
             <Download size={18} className="mr-2" /> Download Receipt (PDF)
           </Button>
-          <Button variant="outline" onClick={() => { setDone(null); setStep(0); }} className="w-full h-11 mt-2">
-            New Payment
-          </Button>
+          <Button variant="outline" onClick={() => { setDone(null); setStep(0); }} className="w-full h-11 mt-2">New Payment</Button>
         </div>
       </div>
     );
@@ -164,21 +172,43 @@ const PaySchoolFees = () => {
 
         {step === 0 && (
           <div className="space-y-4">
-            <div>
-              <Label className="text-sm font-semibold">Select School</Label>
-              <Select value={schoolId} onValueChange={setSchoolId}>
-                <SelectTrigger className="mt-1.5 h-12"><SelectValue placeholder="Choose a school" /></SelectTrigger>
-                <SelectContent>
-                  {SCHOOLS.map((s) => (
-                    <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            {school && (
+            {!manualMode ? (
+              <>
+                <div>
+                  <Label className="text-sm font-semibold">Select School</Label>
+                  <Select value={schoolId} onValueChange={setSchoolId}>
+                    <SelectTrigger className="mt-1.5 h-12"><SelectValue placeholder="Choose a school" /></SelectTrigger>
+                    <SelectContent>
+                      {SCHOOLS.map((s) => (<SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <button onClick={() => { setManualMode(true); setSchoolId(""); }}
+                  className="w-full flex items-center gap-3 p-3 rounded-xl border border-dashed border-primary/40 text-left hover:bg-primary/5 transition">
+                  <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center"><PlusCircle size={20} /></div>
+                  <div>
+                    <p className="text-xs font-bold">School not listed?</p>
+                    <p className="text-[11px] text-muted-foreground">Type the school name manually — you can still pay even if it hasn't joined Eduvest.</p>
+                  </div>
+                </button>
+              </>
+            ) : (
+              <div className="space-y-2">
+                <Label className="text-sm font-semibold">School name</Label>
+                <Input value={manualSchool} onChange={(e) => setManualSchool(e.target.value)} className="h-12" placeholder="e.g. GBHS Etoug-Ebe" />
+                <button onClick={() => { setManualMode(false); setManualSchool(""); }} className="text-[11px] font-semibold text-primary">← Choose from list instead</button>
+              </div>
+            )}
+
+            {school && hasBalance && (
               <div className="bg-secondary text-secondary-foreground rounded-2xl p-4">
                 <p className="text-[11px] opacity-80">Outstanding balance</p>
-                <p className="text-2xl font-extrabold">{school.balance.toLocaleString()} FCFA</p>
+                <p className="text-2xl font-extrabold">{school.balance!.toLocaleString()} FCFA</p>
+              </div>
+            )}
+            {school && !hasBalance && (
+              <div className="bg-muted rounded-xl p-3 text-[11px] text-muted-foreground">
+                No outstanding balance found in our records. You can still pay any amount below.
               </div>
             )}
           </div>
@@ -186,22 +216,20 @@ const PaySchoolFees = () => {
 
         {step === 1 && (
           <div className="space-y-4">
-            <div>
-              <Label className="text-sm font-semibold mb-2 block">Level of education</Label>
-              <div className="grid grid-cols-2 gap-2">
-                {LEVELS.map((l) => (
-                  <button
-                    key={l.key}
-                    onClick={() => setLevel(l.key)}
-                    className={`p-3 rounded-xl border text-xs font-semibold ${
-                      level === l.key ? "border-primary bg-primary/5 text-primary" : "border-border bg-card"
-                    }`}
-                  >
-                    {l.label}
-                  </button>
-                ))}
-              </div>
+            <Label className="text-sm font-semibold mb-2 block">Level of education</Label>
+            <div className="grid grid-cols-2 gap-2">
+              {LEVELS.map((l) => (
+                <button key={l.key} onClick={() => setLevel(l.key)}
+                  className={`p-4 rounded-xl border text-sm font-semibold ${level === l.key ? "border-primary bg-primary/5 text-primary" : "border-border bg-card"}`}>
+                  {l.label}
+                </button>
+              ))}
             </div>
+          </div>
+        )}
+
+        {step === 2 && (
+          <div className="space-y-4">
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <Label className="text-sm font-semibold">Student Name</Label>
@@ -231,14 +259,14 @@ const PaySchoolFees = () => {
           </div>
         )}
 
-        {step === 2 && (
+        {step === 3 && (
           <div className="space-y-4">
-            {school && (
+            {school && hasBalance && (
               <div className="bg-secondary text-secondary-foreground rounded-2xl p-4">
                 <p className="text-[11px] opacity-80">Outstanding balance</p>
-                <p className="text-2xl font-extrabold">{school.balance.toLocaleString()} FCFA</p>
+                <p className="text-2xl font-extrabold">{school.balance!.toLocaleString()} FCFA</p>
                 <div className="mt-3 h-2 bg-white/20 rounded-full overflow-hidden">
-                  <div className="h-full bg-primary transition-all" style={{ width: `${Math.min(100, (Number(amount || 0) / school.balance) * 100)}%` }} />
+                  <div className="h-full bg-primary transition-all" style={{ width: `${Math.min(100, (Number(amount || 0) / school.balance!) * 100)}%` }} />
                 </div>
                 <p className="text-[10px] opacity-80 mt-2">After this payment: {remaining.toLocaleString()} FCFA</p>
               </div>
@@ -254,19 +282,14 @@ const PaySchoolFees = () => {
           </div>
         )}
 
-        {step === 3 && (
+        {step === 4 && (
           <div className="space-y-4">
             <div>
               <Label className="text-sm font-semibold mb-2 block">Payment method</Label>
               <div className="grid grid-cols-3 gap-2">
                 {METHODS.map((m) => (
-                  <button
-                    key={m.key}
-                    onClick={() => setMethod(m.key)}
-                    className={`text-xs font-semibold p-3 rounded-xl border ${
-                      method === m.key ? "border-primary bg-primary/5" : "border-border bg-card"
-                    }`}
-                  >
+                  <button key={m.key} onClick={() => setMethod(m.key)}
+                    className={`text-xs font-semibold p-3 rounded-xl border ${method === m.key ? "border-primary bg-primary/5" : "border-border bg-card"}`}>
                     {m.label}
                   </button>
                 ))}
@@ -277,11 +300,8 @@ const PaySchoolFees = () => {
                 <Label className="text-sm font-semibold">Mobile number</Label>
                 <div className="flex items-center gap-2 mt-1.5">
                   <span className="text-sm font-semibold text-muted-foreground">+237</span>
-                  <Input
-                    type="tel" inputMode="numeric" maxLength={9} placeholder="6XX XXX XXX"
-                    value={phone} onChange={(e) => setPhone(e.target.value.replace(/\D/g, ""))}
-                    className="h-12"
-                  />
+                  <Input type="tel" inputMode="numeric" maxLength={9} placeholder="6XX XXX XXX"
+                    value={phone} onChange={(e) => setPhone(e.target.value.replace(/\D/g, ""))} className="h-12" />
                 </div>
               </div>
             )}
@@ -307,13 +327,9 @@ const PaySchoolFees = () => {
             </Button>
           )}
           {step < STEPS.length - 1 ? (
-            <Button onClick={next} className="flex-1 h-12 gradient-primary text-primary-foreground font-bold">
-              Continue
-            </Button>
+            <Button onClick={next} className="flex-1 h-12 gradient-primary text-primary-foreground font-bold">Continue</Button>
           ) : (
-            <Button onClick={pay} className="flex-1 h-12 gradient-primary text-primary-foreground font-bold">
-              Pay Now
-            </Button>
+            <Button onClick={pay} className="flex-1 h-12 gradient-primary text-primary-foreground font-bold">Pay Now</Button>
           )}
         </div>
       </div>
