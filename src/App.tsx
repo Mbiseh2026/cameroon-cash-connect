@@ -22,6 +22,9 @@ import Insurance from "./pages/Insurance";
 import BookLessons from "./pages/BookLessons";
 import Attendance from "./pages/Attendance";
 import GetPaid from "./pages/GetPaid";
+import Welcome from "./pages/Welcome";
+import Auth from "./pages/Auth";
+import Onboarding from "./pages/Onboarding";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -33,6 +36,9 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
+          <Route path="/welcome" element={<Welcome />} />
+          <Route path="/auth" element={<Auth />} />
+          <Route path="/onboarding" element={<Onboarding />} />
           <Route path="/" element={<Index />} />
           <Route path="/deposit" element={<Deposit />} />
           <Route path="/save" element={<SaveMoney />} />
