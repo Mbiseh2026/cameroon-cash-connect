@@ -2,26 +2,36 @@ import { Home, CalendarCheck, ScanLine, ShieldCheck, User, GraduationCap, HomeIc
 import { useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { useLang } from "@/lib/i18n";
 
-const navItems = [
-  { icon: Home, label: "Home", path: "/" },
-  { icon: CalendarCheck, label: "Attendance", path: "/attendance" },
-  { icon: ScanLine, label: "Pay", path: "#pay", center: true },
-  { icon: ShieldCheck, label: "Insurance", path: "/insurance" },
-  { icon: User, label: "Profile", path: "/profile" },
-];
-
-const PAY_OPTIONS = [
+const PAY_OPTIONS_EN = [
   { icon: GraduationCap, label: "Pay Tuition Fees", desc: "School fees & receipts", path: "/pay-fees", tone: "bg-primary/10 text-primary" },
   { icon: HomeIcon, label: "Pay Rent", desc: "Track & build trust", path: "/pay-rent", tone: "bg-secondary/10 text-secondary" },
   { icon: Wallet, label: "Pay Salary", desc: "Pay staff securely", path: "/send", tone: "bg-primary/10 text-primary" },
   { icon: Shield2, label: "Pay Insurance", desc: "Cover & protect", path: "/insurance", tone: "bg-secondary/10 text-secondary" },
 ];
+const PAY_OPTIONS_FR = [
+  { icon: GraduationCap, label: "Frais de scolarité", desc: "Frais & reçus", path: "/pay-fees", tone: "bg-primary/10 text-primary" },
+  { icon: HomeIcon, label: "Payer le loyer", desc: "Suivre & bâtir la confiance", path: "/pay-rent", tone: "bg-secondary/10 text-secondary" },
+  { icon: Wallet, label: "Payer salaire", desc: "Payer le personnel", path: "/send", tone: "bg-primary/10 text-primary" },
+  { icon: Shield2, label: "Payer assurance", desc: "Couvrir & protéger", path: "/insurance", tone: "bg-secondary/10 text-secondary" },
+];
 
 const BottomNav = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { t, lang } = useLang();
   const [payOpen, setPayOpen] = useState(false);
+
+  const navItems = [
+    { icon: Home, label: t("nav_home"), path: "/" },
+    { icon: CalendarCheck, label: t("nav_attendance"), path: "/attendance" },
+    { icon: ScanLine, label: t("nav_pay"), path: "#pay", center: true },
+    { icon: ShieldCheck, label: t("nav_insurance"), path: "/insurance" },
+    { icon: User, label: t("nav_profile"), path: "/profile" },
+  ];
+  const PAY_OPTIONS = lang === "fr" ? PAY_OPTIONS_FR : PAY_OPTIONS_EN;
+
 
   return (
     <>
@@ -62,7 +72,7 @@ const BottomNav = () => {
       <Sheet open={payOpen} onOpenChange={setPayOpen}>
         <SheetContent side="bottom" className="rounded-t-2xl max-w-md mx-auto">
           <SheetHeader>
-            <SheetTitle className="text-secondary">What would you like to pay?</SheetTitle>
+            <SheetTitle className="text-secondary">{lang === "fr" ? "Que voulez-vous payer ?" : "What would you like to pay?"}</SheetTitle>
           </SheetHeader>
           <div className="grid grid-cols-2 gap-3 mt-4">
             {PAY_OPTIONS.map((p) => (
