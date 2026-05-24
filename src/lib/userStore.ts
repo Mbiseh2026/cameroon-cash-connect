@@ -3,16 +3,28 @@
 
 export type Role = "parent" | "student" | "teacher" | "sme";
 export type VerifyChannel = "whatsapp" | "sms";
+export type Gender = "male" | "female";
 
 export interface EduvestUser {
+  firstName: string;
+  lastName: string;
+  country: string;
+  region: string;
+  city: string;
   phone: string;
   verifyChannel: VerifyChannel;
   phoneVerified: boolean;
   phoneIsPrimaryPay: boolean;
   email?: string;
+  username?: string;
   emailVerified: boolean;
   role?: Role;
   teacherProfileComplete: boolean;
+  // KYC fields (synchronised from signup info)
+  gender?: Gender;
+  dob?: string;
+  citizenship?: string;
+  residentCountry?: string;
   kycComplete: boolean;
   kybComplete: boolean;
   biometricEnabled: boolean;
@@ -22,6 +34,11 @@ export interface EduvestUser {
 const KEY = "eduvest_user";
 
 const DEFAULT: EduvestUser = {
+  firstName: "",
+  lastName: "",
+  country: "",
+  region: "",
+  city: "",
   phone: "",
   verifyChannel: "sms",
   phoneVerified: false,
@@ -59,12 +76,12 @@ export const isAuthed = () => !!getUser().phone && getUser().phoneVerified && !!
 export const canSend = () => getUser().kycComplete;
 export const canWithdraw = () => getUser().kycComplete;
 
-// Teacher lesson profile (mirrors fields used in Book Lessons UI)
+// Teacher lesson profile
 export interface TeacherProfile {
   subject: string;
   levels: string[];
   exams: string;
-  modes: string[];      // online / onsite / hybrid
+  modes: string[];
   city: string;
   quarter: string;
   rate: string;

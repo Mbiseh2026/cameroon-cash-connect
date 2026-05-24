@@ -6,7 +6,8 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { isAuthed } from "@/lib/userStore";
+import { isAuthed, getUser } from "@/lib/userStore";
+import { useLang } from "@/lib/i18n";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -63,6 +64,8 @@ const COMMUNITY: CommunityMember[] = [
 
 const Index = () => {
   const navigate = useNavigate();
+  const { t } = useLang();
+  const user = getUser();
   useEffect(() => { if (!isAuthed()) navigate("/welcome", { replace: true }); }, [navigate]);
   const [showBalance, setShowBalance] = useState(false);
   const [pinDialog, setPinDialog] = useState(false);
@@ -103,11 +106,11 @@ const Index = () => {
 
         <section className="gradient-hero rounded-2xl p-5 text-primary-foreground relative overflow-hidden">
           <div className="relative z-10 max-w-[60%]">
-            <p className="text-sm opacity-90">Welcome back,</p>
-            <h1 className="text-2xl font-extrabold mb-1">Emmanuel!</h1>
+            <p className="text-sm opacity-90">{t("welcome_back")}</p>
+            <h1 className="text-2xl font-extrabold mb-1">{user.firstName || "Friend"}!</h1>
             <p className="text-xs opacity-90 leading-snug mb-3">Wallet balance only. Lockable from Profile › Security.</p>
             <button onClick={handleBalanceTap} className="bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-bold px-4 py-2 rounded-lg transition inline-flex items-center gap-2">
-              {showBalance ? "FCFA 245,000 · Wallet" : (<><Lock size={14} /> View Balance</>)}
+              {showBalance ? "FCFA 245,000 · Wallet" : (<><Lock size={14} /> {t("view_balance")}</>)}
             </button>
           </div>
           <img src={hero} alt="Graduation cap on books" className="absolute right-0 bottom-0 w-40 h-40 object-contain" width={1024} height={1024} />
@@ -115,8 +118,8 @@ const Index = () => {
 
         <section className="bg-card border border-border rounded-2xl p-4">
           <div className="flex items-center justify-between mb-3">
-            <h2 className="text-sm font-bold text-secondary">Quick Actions</h2>
-            <button onClick={() => setMoreQuickOpen(true)} className="text-xs font-semibold text-primary">See all</button>
+            <h2 className="text-sm font-bold text-secondary">{t("quick_actions")}</h2>
+            <button onClick={() => setMoreQuickOpen(true)} className="text-xs font-semibold text-primary">{t("see_all")}</button>
           </div>
           <div className="grid grid-cols-4 gap-2">
             {PRIMARY_QUICK.map((a) => (
@@ -130,8 +133,8 @@ const Index = () => {
 
         <section className="bg-card border border-border rounded-2xl p-4">
           <div className="flex items-center justify-between mb-3">
-            <h2 className="text-sm font-bold text-secondary">Services</h2>
-            <button onClick={() => setServicesOpen(true)} className="text-xs font-semibold text-primary">See all</button>
+            <h2 className="text-sm font-bold text-secondary">{t("services")}</h2>
+            <button onClick={() => setServicesOpen(true)} className="text-xs font-semibold text-primary">{t("see_all")}</button>
           </div>
           <div className="space-y-2">
             {VISIBLE_SERVICES.map((s) => (<ServiceRow key={s.label} service={s} onStart={() => navigate(s.path)} />))}
@@ -141,10 +144,10 @@ const Index = () => {
         <section className="bg-card border border-border rounded-2xl p-4">
           <div className="flex items-center justify-between mb-3">
             <div>
-              <h2 className="text-sm font-bold text-secondary">Eduvest Community</h2>
-              <p className="text-[10px] text-muted-foreground">Connect everyone in the ecosystem</p>
+              <h2 className="text-sm font-bold text-secondary">{t("community")}</h2>
+              <p className="text-[10px] text-muted-foreground">{t("community_d")}</p>
             </div>
-            <button onClick={() => setCommunityOpen(true)} className="text-xs font-semibold text-primary">See all</button>
+            <button onClick={() => setCommunityOpen(true)} className="text-xs font-semibold text-primary">{t("see_all")}</button>
           </div>
           <div className="grid grid-cols-4 gap-2">
             {COMMUNITY.slice(0, 4).map((c) => (
@@ -159,8 +162,8 @@ const Index = () => {
         <section onClick={() => navigate("/rewards")} className="cursor-pointer bg-accent border border-primary/20 rounded-2xl p-4 flex items-center gap-3">
           <div className="w-12 h-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-extrabold">720</div>
           <div className="flex-1">
-            <p className="text-xs font-bold text-secondary">Your Trust Score</p>
-            <p className="text-[10px] text-muted-foreground">Every payment builds your financial identity.</p>
+            <p className="text-xs font-bold text-secondary">{t("trust_score")}</p>
+            <p className="text-[10px] text-muted-foreground">{t("trust_score_d")}</p>
           </div>
           <ChevronRight size={18} className="text-primary" />
         </section>
