@@ -1,11 +1,13 @@
 import PageHeader from "@/components/PageHeader";
 import Stepper from "@/components/Stepper";
+import KycGate from "@/components/KycGate";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { ChevronLeft } from "lucide-react";
+import { canSend } from "@/lib/userStore";
 
 type Method = "treasurit" | "mtn" | "orange";
 const methods: { key: Method; label: string }[] = [
@@ -23,6 +25,8 @@ const SendMoney = () => {
   const [amount, setAmount] = useState("");
   const [reason, setReason] = useState("");
   const [pin, setPin] = useState("");
+  const [gateOpen, setGateOpen] = useState(false);
+  useEffect(() => { if (!canSend()) setGateOpen(true); }, []);
 
   const validate = () => {
     if (step === 1) {
@@ -43,6 +47,7 @@ const SendMoney = () => {
   const back = () => setStep((s) => Math.max(0, s - 1));
 
   const send = () => {
+    if (!canSend()) { setGateOpen(true); return; }
     if (!validate()) return;
     const target = recipientName ? `${recipientName} (+237 ${recipient})` : recipient;
     toast.success(`${Number(amount).toLocaleString()} FCFA sent to ${target}`);
@@ -51,6 +56,7 @@ const SendMoney = () => {
 
   return (
     <div className="min-h-screen bg-background pb-20">
+      <KycGate open={gateOpen} onOpenChange={setGateOpen} action="Send" />
       <div className="max-w-md mx-auto px-4 pt-6 animate-fade-in">
         <PageHeader title="Send Money" subtitle={`Step ${step + 1} of ${STEPS.length}`} />
         <Stepper steps={STEPS} current={step} />
