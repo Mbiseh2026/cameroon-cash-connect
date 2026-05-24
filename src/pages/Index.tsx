@@ -5,7 +5,8 @@ import {
   ShieldCheck, CalendarCheck, Lock,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { isAuthed } from "@/lib/userStore";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -62,6 +63,7 @@ const COMMUNITY: CommunityMember[] = [
 
 const Index = () => {
   const navigate = useNavigate();
+  useEffect(() => { if (!isAuthed()) navigate("/welcome", { replace: true }); }, [navigate]);
   const [showBalance, setShowBalance] = useState(false);
   const [pinDialog, setPinDialog] = useState(false);
   const [pinValue, setPinValue] = useState("");
