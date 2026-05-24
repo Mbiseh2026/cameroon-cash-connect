@@ -1,5 +1,5 @@
 import PageHeader from "@/components/PageHeader";
-import { User, Shield, Bell, LogOut, Sun, Moon, Languages, ListChecks, Lock, KeyRound } from "lucide-react";
+import { User, Shield, Bell, LogOut, Sun, Moon, Languages, ListChecks, Lock, KeyRound, AlertCircle, ShieldCheck, Mail, GraduationCap, Building2, ChevronRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { Switch } from "@/components/ui/switch";
@@ -7,6 +7,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { getUser } from "@/lib/userStore";
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -49,16 +50,19 @@ const Profile = () => {
       <div className="max-w-md mx-auto px-4 pt-6 animate-fade-in">
         <PageHeader title="Profile" subtitle="Account settings" />
 
-        <div className="flex items-center gap-4 bg-card border border-border rounded-xl p-4 mb-6">
+        <div className="flex items-center gap-4 bg-card border border-border rounded-xl p-4 mb-4">
           <div className="w-14 h-14 rounded-full gradient-primary flex items-center justify-center">
             <span className="text-xl font-bold text-primary-foreground">E</span>
           </div>
           <div>
             <p className="font-bold">Eduvest User</p>
-            <p className="text-xs text-muted-foreground">+237 6XX XXX XXX</p>
-            <span className="text-[10px] bg-success/10 text-success px-2 py-0.5 rounded-full font-bold">Verified</span>
+            <p className="text-xs text-muted-foreground">{getUser().phone ? `+237 ${getUser().phone}` : "+237 6XX XXX XXX"}</p>
+            <span className="text-[10px] bg-success/10 text-success px-2 py-0.5 rounded-full font-bold">{getUser().kycComplete ? "Verified" : "Unverified"}</span>
           </div>
         </div>
+
+        <Reminders />
+
 
         <div className="space-y-2">
           <button onClick={() => navigate("/history")}
