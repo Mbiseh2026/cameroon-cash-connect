@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { getUser, clearUser } from "@/lib/userStore";
+import { useLang as useGlobalLang, setLang as setGlobalLang } from "@/lib/i18n";
 
 type Lang = "en" | "fr";
 const T = {
@@ -66,7 +67,8 @@ const T = {
 const Profile = () => {
   const navigate = useNavigate();
   const [dark, setDark] = useState(() => document.documentElement.classList.contains("dark"));
-  const [lang, setLang] = useState<Lang>(() => ((localStorage.getItem("lang") as Lang) || "en"));
+  const { lang } = useGlobalLang();
+  const setLang = setGlobalLang;
   const t = T[lang];
 
   const [walletLock, setWalletLock] = useState(() => localStorage.getItem("walletPinLock") === "1");
@@ -88,8 +90,6 @@ const Profile = () => {
   const toggleLang = () => {
     const next: Lang = lang === "en" ? "fr" : "en";
     setLang(next);
-    localStorage.setItem("lang", next);
-    document.documentElement.lang = next;
     toast.success(next === "fr" ? "Langue : Français" : "Language: English");
   };
 
