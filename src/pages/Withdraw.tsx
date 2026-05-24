@@ -1,11 +1,13 @@
 import PageHeader from "@/components/PageHeader";
 import Stepper from "@/components/Stepper";
+import KycGate from "@/components/KycGate";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { ChevronLeft } from "lucide-react";
+import { canWithdraw } from "@/lib/userStore";
 
 type Method = "mtn" | "orange" | "treasurit";
 const options: { key: Method; label: string }[] = [
@@ -23,6 +25,8 @@ const Withdraw = () => {
   const [treasuritAccount, setTreasuritAccount] = useState("");
   const [amount, setAmount] = useState("");
   const [pin, setPin] = useState("");
+  const [gateOpen, setGateOpen] = useState(false);
+  useEffect(() => { if (!canWithdraw()) setGateOpen(true); }, []);
 
   const validate = () => {
     if (step === 0) {
@@ -41,6 +45,7 @@ const Withdraw = () => {
   const back = () => setStep((s) => Math.max(0, s - 1));
 
   const submit = () => {
+    if (!canWithdraw()) { setGateOpen(true); return; }
     if (!validate()) return;
     toast.success(`Withdrawal of ${Number(amount).toLocaleString()} FCFA initiated`);
     setStep(0); setAmount(""); setPin("");
@@ -48,6 +53,7 @@ const Withdraw = () => {
 
   return (
     <div className="min-h-screen bg-background pb-20">
+      <KycGate open={gateOpen} onOpenChange={setGateOpen} action="Withdraw" />
       <div className="max-w-md mx-auto px-4 pt-6 animate-fade-in">
         <PageHeader title="Withdraw" subtitle={`Step ${step + 1} of ${STEPS.length}`} />
         <Stepper steps={STEPS} current={step} />

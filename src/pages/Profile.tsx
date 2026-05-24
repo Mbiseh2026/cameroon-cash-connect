@@ -1,5 +1,5 @@
 import PageHeader from "@/components/PageHeader";
-import { User, Shield, Bell, LogOut, Sun, Moon, Languages, ListChecks, Lock, KeyRound } from "lucide-react";
+import { User, Shield, Bell, LogOut, Sun, Moon, Languages, ListChecks, Lock, KeyRound, AlertCircle, ShieldCheck, Mail, GraduationCap, Building2, ChevronRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { Switch } from "@/components/ui/switch";
@@ -7,6 +7,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { getUser } from "@/lib/userStore";
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -49,16 +50,19 @@ const Profile = () => {
       <div className="max-w-md mx-auto px-4 pt-6 animate-fade-in">
         <PageHeader title="Profile" subtitle="Account settings" />
 
-        <div className="flex items-center gap-4 bg-card border border-border rounded-xl p-4 mb-6">
+        <div className="flex items-center gap-4 bg-card border border-border rounded-xl p-4 mb-4">
           <div className="w-14 h-14 rounded-full gradient-primary flex items-center justify-center">
             <span className="text-xl font-bold text-primary-foreground">E</span>
           </div>
           <div>
             <p className="font-bold">Eduvest User</p>
-            <p className="text-xs text-muted-foreground">+237 6XX XXX XXX</p>
-            <span className="text-[10px] bg-success/10 text-success px-2 py-0.5 rounded-full font-bold">Verified</span>
+            <p className="text-xs text-muted-foreground">{getUser().phone ? `+237 ${getUser().phone}` : "+237 6XX XXX XXX"}</p>
+            <span className="text-[10px] bg-success/10 text-success px-2 py-0.5 rounded-full font-bold">{getUser().kycComplete ? "Verified" : "Unverified"}</span>
           </div>
         </div>
+
+        <Reminders />
+
 
         <div className="space-y-2">
           <button onClick={() => navigate("/history")}
@@ -154,4 +158,34 @@ const Profile = () => {
   );
 };
 
+const Reminders = () => {
+  const navigate = useNavigate();
+  const u = getUser();
+  const items: { icon: any; text: string; cta: string; to: string; tone: "warn" | "info" }[] = [];
+  if (!u.kycComplete) items.push({ icon: ShieldCheck, text: "Complete KYC to unlock Send & Withdraw", cta: "Verify", to: "/onboarding", tone: "warn" });
+  if (u.email && !u.emailVerified) items.push({ icon: Mail, text: "Verify your email for receipts & recovery", cta: "Verify", to: "/onboarding", tone: "info" });
+  if (u.role === "teacher" && !u.teacherProfileComplete) items.push({ icon: GraduationCap, text: "Complete your lesson profile — parents are searching", cta: "Fill in", to: "/onboarding", tone: "info" });
+  if (u.role === "teacher" && u.teacherProfileComplete) items.push({ icon: GraduationCap, text: "Edit your lesson profile", cta: "Edit", to: "/onboarding", tone: "info" });
+  if (u.role === "sme" && !u.kybComplete) items.push({ icon: Building2, text: "Submit business documents (KYB) to access SME tools", cta: "Submit", to: "/onboarding", tone: "warn" });
+  if (items.length === 0) return null;
+  return (
+    <div className="space-y-2 mb-4">
+      <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-wide">Reminders</p>
+      {items.map((it, i) => (
+        <button key={i} onClick={() => navigate(it.to)}
+          className={`w-full flex items-center gap-3 p-3 rounded-xl border text-left ${it.tone === "warn" ? "border-warning/40 bg-warning/5" : "border-primary/30 bg-primary/5"}`}>
+          <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${it.tone === "warn" ? "bg-warning/15 text-warning" : "bg-primary/15 text-primary"}`}>
+            <it.icon size={16} />
+          </div>
+          <div className="flex-1">
+            <p className="text-xs font-bold leading-tight">{it.text}</p>
+          </div>
+          <span className="text-[11px] font-bold text-primary flex items-center gap-0.5">{it.cta} <ChevronRight size={14} /></span>
+        </button>
+      ))}
+    </div>
+  );
+};
+
 export default Profile;
+
