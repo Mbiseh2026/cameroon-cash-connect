@@ -25,7 +25,7 @@ const BottomNav = () => {
 
   const navItems = [
     { icon: Home, label: t("nav_home"), path: "/" },
-    { icon: CalendarCheck, label: t("nav_attendance"), path: "/attendance" },
+    { icon: Sparkles, label: t("nav_ai"), path: "/ai-help" },
     { icon: ScanLine, label: t("nav_pay"), path: "#pay", center: true },
     { icon: ShieldCheck, label: t("nav_insurance"), path: "/insurance" },
     { icon: User, label: t("nav_profile"), path: "/profile" },
