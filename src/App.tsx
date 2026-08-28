@@ -21,6 +21,7 @@ import Profile from "./pages/Profile";
 import Insurance from "./pages/Insurance";
 import BookLessons from "./pages/BookLessons";
 import Attendance from "./pages/Attendance";
+import AiHelp from "./pages/AiHelp";
 import GetPaid from "./pages/GetPaid";
 import Welcome from "./pages/Welcome";
 import Auth from "./pages/Auth";
@@ -54,6 +55,7 @@ const App = () => (
           <Route path="/tfunds" element={<TFunds />} />
           <Route path="/history" element={<History />} />
           <Route path="/attendance" element={<Attendance />} />
+          <Route path="/ai-help" element={<AiHelp />} />
           <Route path="/get-paid" element={<GetPaid />} />
           <Route path="/rewards" element={<Rewards />} />
           <Route path="/profile" element={<Profile />} />

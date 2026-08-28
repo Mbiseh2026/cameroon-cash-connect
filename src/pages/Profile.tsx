@@ -1,5 +1,5 @@
 import PageHeader from "@/components/PageHeader";
-import { User, Shield, Bell, LogOut, Sun, Moon, Languages, ListChecks, Lock, KeyRound, ShieldCheck, Mail, GraduationCap, Building2, ChevronRight } from "lucide-react";
+import { User, Shield, Bell, LogOut, Sun, Moon, Languages, ListChecks, Lock, KeyRound, ShieldCheck, Mail, GraduationCap, Building2, ChevronRight, CalendarCheck } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { Switch } from "@/components/ui/switch";
@@ -16,6 +16,7 @@ const T = {
     title: "Profile", subtitle: "Account settings",
     verified: "Verified", unverified: "Unverified",
     myTx: "My Transactions", viewHistory: "View history",
+    attendance: "Attendance", attendanceDesc: "Weekly school reports",
     security: "Security & PIN",
     changePin: "Change 4-digit PIN", setPin: "Set 4-digit PIN", set: "Set", notSet: "Not set",
     walletLockTitle: "Require PIN for wallet balance", walletLockDesc: "Hide home-screen balance from kids.",
@@ -41,6 +42,7 @@ const T = {
     title: "Profil", subtitle: "Paramètres du compte",
     verified: "Vérifié", unverified: "Non vérifié",
     myTx: "Mes Transactions", viewHistory: "Voir l'historique",
+    attendance: "Présence", attendanceDesc: "Rapports hebdomadaires",
     security: "Sécurité & Code PIN",
     changePin: "Modifier le code PIN (4 chiffres)", setPin: "Définir le code PIN (4 chiffres)", set: "Défini", notSet: "Non défini",
     walletLockTitle: "Exiger le PIN pour le solde du portefeuille", walletLockDesc: "Masquer le solde aux enfants.",
@@ -135,6 +137,13 @@ const Profile = () => {
             <ListChecks size={18} className="text-primary" />
             <span className="text-sm font-semibold">{t.myTx}</span>
             <span className="ml-auto text-[10px] text-muted-foreground">{t.viewHistory}</span>
+          </button>
+
+          <button onClick={() => navigate("/attendance")}
+            className="w-full flex items-center gap-3 bg-card border border-border rounded-xl p-4 hover:bg-muted transition-colors">
+            <CalendarCheck size={18} className="text-primary" />
+            <span className="text-sm font-semibold">{t.attendance}</span>
+            <span className="ml-auto text-[10px] text-muted-foreground">{t.attendanceDesc}</span>
           </button>
 
           <div className="bg-card border border-border rounded-xl p-4 space-y-3">
