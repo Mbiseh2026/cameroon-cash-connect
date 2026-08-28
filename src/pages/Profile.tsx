@@ -1,5 +1,5 @@
 import PageHeader from "@/components/PageHeader";
-import { User, Shield, Bell, LogOut, Sun, Moon, Languages, ListChecks, Lock, KeyRound, ShieldCheck, Mail, GraduationCap, Building2, ChevronRight } from "lucide-react";
+import { User, Shield, Bell, LogOut, Sun, Moon, Languages, ListChecks, Lock, KeyRound, ShieldCheck, Mail, GraduationCap, Building2, ChevronRight, CalendarCheck } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { Switch } from "@/components/ui/switch";
@@ -137,6 +137,13 @@ const Profile = () => {
             <ListChecks size={18} className="text-primary" />
             <span className="text-sm font-semibold">{t.myTx}</span>
             <span className="ml-auto text-[10px] text-muted-foreground">{t.viewHistory}</span>
+          </button>
+
+          <button onClick={() => navigate("/attendance")}
+            className="w-full flex items-center gap-3 bg-card border border-border rounded-xl p-4 hover:bg-muted transition-colors">
+            <CalendarCheck size={18} className="text-primary" />
+            <span className="text-sm font-semibold">{t.attendance}</span>
+            <span className="ml-auto text-[10px] text-muted-foreground">{t.attendanceDesc}</span>
           </button>
 
           <div className="bg-card border border-border rounded-xl p-4 space-y-3">
