@@ -1,4 +1,4 @@
-import { Home, CalendarCheck, ScanLine, ShieldCheck, User, GraduationCap, HomeIcon, Wallet, ShieldCheck as Shield2 } from "lucide-react";
+import { Home, Sparkles, ScanLine, ShieldCheck, User, GraduationCap, HomeIcon, Wallet, ShieldCheck as Shield2 } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
