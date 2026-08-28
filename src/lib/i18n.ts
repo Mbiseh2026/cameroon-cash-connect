@@ -167,6 +167,7 @@ export const STR = {
   // BottomNav
   nav_home: { en: "Home", fr: "Accueil" },
   nav_attendance: { en: "Attendance", fr: "Présence" },
+  nav_ai: { en: "AI Help", fr: "Aide IA" },
   nav_pay: { en: "Pay", fr: "Payer" },
   nav_insurance: { en: "Insurance", fr: "Assurance" },
   nav_profile: { en: "Profile", fr: "Profil" },
