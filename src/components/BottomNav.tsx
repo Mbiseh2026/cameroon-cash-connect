@@ -1,4 +1,4 @@
-import { Home, Sparkles, ScanLine, ShieldCheck, User, GraduationCap, HomeIcon, Wallet, ShieldCheck as Shield2 } from "lucide-react";
+import { Home, Sparkles, ScanLine, Landmark, User, GraduationCap, HomeIcon, Wallet } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
@@ -8,13 +8,11 @@ const PAY_OPTIONS_EN = [
   { icon: GraduationCap, label: "Pay Tuition Fees", desc: "School fees & receipts", path: "/pay-fees", tone: "bg-primary/10 text-primary" },
   { icon: HomeIcon, label: "Pay Rent", desc: "Track & build trust", path: "/pay-rent", tone: "bg-secondary/10 text-secondary" },
   { icon: Wallet, label: "Pay Salary", desc: "Pay staff securely", path: "/send", tone: "bg-primary/10 text-primary" },
-  { icon: Shield2, label: "Pay Insurance", desc: "Cover & protect", path: "/insurance", tone: "bg-secondary/10 text-secondary" },
 ];
 const PAY_OPTIONS_FR = [
   { icon: GraduationCap, label: "Frais de scolarité", desc: "Frais & reçus", path: "/pay-fees", tone: "bg-primary/10 text-primary" },
   { icon: HomeIcon, label: "Payer le loyer", desc: "Suivre & bâtir la confiance", path: "/pay-rent", tone: "bg-secondary/10 text-secondary" },
   { icon: Wallet, label: "Payer salaire", desc: "Payer le personnel", path: "/send", tone: "bg-primary/10 text-primary" },
-  { icon: Shield2, label: "Payer assurance", desc: "Couvrir & protéger", path: "/insurance", tone: "bg-secondary/10 text-secondary" },
 ];
 
 const BottomNav = () => {
@@ -27,7 +25,7 @@ const BottomNav = () => {
     { icon: Home, label: t("nav_home"), path: "/" },
     { icon: Sparkles, label: t("nav_ai"), path: "/ai-help" },
     { icon: ScanLine, label: t("nav_pay"), path: "#pay", center: true },
-    { icon: ShieldCheck, label: t("nav_insurance"), path: "/insurance" },
+    { icon: Landmark, label: t("nav_finance"), path: "/finance" },
     { icon: User, label: t("nav_profile"), path: "/profile" },
   ];
   const PAY_OPTIONS = lang === "fr" ? PAY_OPTIONS_FR : PAY_OPTIONS_EN;

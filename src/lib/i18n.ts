@@ -170,6 +170,7 @@ export const STR = {
   nav_ai: { en: "AI Help", fr: "Aide IA" },
   nav_pay: { en: "Pay", fr: "Payer" },
   nav_insurance: { en: "Insurance", fr: "Assurance" },
+  nav_finance: { en: "Finance", fr: "Finance" },
   nav_profile: { en: "Profile", fr: "Profil" },
 
   // Errors
