@@ -19,6 +19,9 @@ import History from "./pages/History";
 import Rewards from "./pages/Rewards";
 import Profile from "./pages/Profile";
 import Insurance from "./pages/Insurance";
+import Finance from "./pages/Finance";
+import EShopping from "./pages/EShopping";
+import Admission from "./pages/Admission";
 import BookLessons from "./pages/BookLessons";
 import Attendance from "./pages/Attendance";
 import AiHelp from "./pages/AiHelp";
@@ -47,6 +50,9 @@ const App = () => (
           <Route path="/send" element={<SendMoney />} />
           <Route path="/withdraw" element={<Withdraw />} />
           <Route path="/insurance" element={<Insurance />} />
+          <Route path="/finance" element={<Finance />} />
+          <Route path="/shopping" element={<EShopping />} />
+          <Route path="/admission" element={<Admission />} />
           <Route path="/lessons" element={<BookLessons />} />
           <Route path="/pay-fees" element={<PaySchoolFees />} />
           <Route path="/pay-rent" element={<PayRent />} />

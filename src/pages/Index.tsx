@@ -2,7 +2,7 @@ import {
   Bell, Wallet, PiggyBank, GraduationCap, ChevronRight,
   SendHorizontal, Home as HomeIconLucide, ScanLine, BookOpen, Users,
   ArrowUpFromLine, ArrowDownToLine, Landmark, Briefcase, Building2, UserCog,
-  ShieldCheck, CalendarCheck, Lock,
+  ShieldCheck, CalendarCheck, Lock, ShoppingBag,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
@@ -18,13 +18,15 @@ import hero from "@/assets/eduvest-hero.png";
 
 const PRIMARY_QUICK = [
   { icon: ScanLine, label: "Pay School Fees", action: "nav", path: "/pay-fees", tone: "bg-primary/10 text-primary" },
-  { icon: SendHorizontal, label: "Send Money", action: "send", tone: "bg-secondary/10 text-secondary" },
-  { icon: PiggyBank, label: "Save Money", action: "nav", path: "/save", tone: "bg-primary/10 text-primary" },
+  { icon: ShoppingBag, label: "E-Shopping", action: "nav", path: "/shopping", tone: "bg-secondary/10 text-secondary" },
+  { icon: GraduationCap, label: "Admission", action: "nav", path: "/admission", tone: "bg-primary/10 text-primary" },
   { icon: GraduationCap, label: "Book Lessons", action: "nav", path: "/lessons", tone: "bg-secondary/10 text-secondary" },
 ];
 
 // "See all" must NOT repeat the 4 Primary Quick actions
 const MORE_QUICK = [
+  { icon: SendHorizontal, label: "Send Money", path: "#send", tone: "bg-secondary/10 text-secondary" },
+  { icon: PiggyBank, label: "Save Money", path: "/save", tone: "bg-primary/10 text-primary" },
   { icon: HomeIconLucide, label: "Pay Rent", path: "/pay-rent", tone: "bg-primary/10 text-primary" },
   { icon: Wallet, label: "Get Paid", path: "/get-paid", tone: "bg-secondary/10 text-secondary" },
   { icon: Landmark, label: "Take Loan", path: "/loans", tone: "bg-primary/10 text-primary" },
@@ -123,7 +125,7 @@ const Index = () => {
           </div>
           <div className="grid grid-cols-4 gap-2">
             {PRIMARY_QUICK.map((a) => (
-              <button key={a.label} onClick={() => { if (a.action === "send") setSendOpen(true); else navigate(a.path!); }} className="flex flex-col items-center gap-1.5">
+              <button key={a.label} onClick={() => navigate(a.path)} className="flex flex-col items-center gap-1.5">
                 <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${a.tone}`}><a.icon size={20} /></div>
                 <span className="text-[10px] font-semibold text-foreground text-center leading-tight">{a.label}</span>
               </button>
@@ -193,7 +195,7 @@ const Index = () => {
           <p className="text-[11px] text-muted-foreground mb-3">Different from the 4 shown on home.</p>
           <div className="grid grid-cols-4 gap-3 mt-2">
             {MORE_QUICK.map((a) => (
-              <button key={a.label} onClick={() => { setMoreQuickOpen(false); navigate(a.path); }} className="flex flex-col items-center gap-1.5">
+              <button key={a.label} onClick={() => { setMoreQuickOpen(false); if (a.path === "#send") setSendOpen(true); else navigate(a.path); }} className="flex flex-col items-center gap-1.5">
                 <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${a.tone}`}><a.icon size={20} /></div>
                 <span className="text-[10px] font-semibold text-center leading-tight">{a.label}</span>
               </button>
