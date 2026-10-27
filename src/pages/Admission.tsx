@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { GraduationCap, Globe, MapPin, ClipboardList } from "lucide-react";
+import { GraduationCap, Globe, MapPin, ClipboardList, MessageCircle, Phone } from "lucide-react";
 import PageHeader from "@/components/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -27,15 +27,28 @@ const Admission = () => {
           <Button variant={scope === "national" ? "default" : "outline"} aria-pressed={scope === "national"} onClick={() => setScope("national")}><MapPin />{fr ? "Nationale" : "National"}</Button>
           <Button variant={scope === "international" ? "default" : "outline"} aria-pressed={scope === "international"} onClick={() => setScope("international")}><Globe />{fr ? "Internationale" : "International"}</Button>
         </div>
+        {scope === "international" ? (
+          <section className="space-y-4">
+            <div className="rounded-2xl bg-secondary text-secondary-foreground p-5 space-y-2">
+              <Globe size={28} />
+              <h2 className="text-lg font-extrabold">{fr ? "Conseiller en admission internationale" : "International admission consultant"}</h2>
+              <p className="text-xs opacity-90">{fr ? "Un conseiller examine vos conditions d’éligibilité, documents, visa et budget avant de postuler." : "A consultant reviews your eligibility requirements, documents, visa and budget before you apply."}</p>
+            </div>
+            <div className="space-y-2"><Label htmlFor="applicant">{fr ? "Nom du candidat" : "Applicant name"}</Label><Input id="applicant" value={name} onChange={e => setName(e.target.value)} autoComplete="name" /></div>
+            <div className="space-y-2"><Label htmlFor="destination-country">{fr ? "Pays souhaité" : "Destination country"}</Label><Input id="destination-country" value={country} onChange={e => setCountry(e.target.value)} /></div>
+            <Button asChild className="w-full"><a href={`https://wa.me/237600000000?text=${encodeURIComponent(`Hi Eduvest, I need an international admission consultant.\nApplicant: ${name}\nDestination: ${country}`)}`} target="_blank" rel="noopener noreferrer"><MessageCircle />{fr ? "Contacter un conseiller" : "Contact a Consultant"}</a></Button>
+            <Button asChild variant="outline" className="w-full"><a href="tel:+237600000000"><Phone />{fr ? "Appeler" : "Call us"}</a></Button>
+          </section>
+        ) : (<>
         <div className="space-y-2"><Label>{fr ? "Niveau d’études" : "Study level"}</Label><div className="grid grid-cols-2 gap-2">{levels.map((label, index) => <Button key={label} variant={level === String(index) ? "secondary" : "outline"} aria-pressed={level === String(index)} onClick={() => setLevel(String(index))}>{label}</Button>)}</div></div>
         <div className="space-y-4">
           <div className="space-y-2"><Label htmlFor="applicant">{fr ? "Nom du candidat" : "Applicant name"}</Label><Input id="applicant" value={name} onChange={e => setName(e.target.value)} autoComplete="name" /></div>
-          {scope === "international" && <div className="space-y-2"><Label htmlFor="destination-country">{fr ? "Pays souhaité" : "Destination country"}</Label><Input id="destination-country" value={country} onChange={e => setCountry(e.target.value)} /></div>}
           <div className="space-y-2"><Label htmlFor="institution">{fr ? "Établissement souhaité" : "Preferred school or university"}</Label><Input id="institution" value={institution} onChange={e => setInstitution(e.target.value)} /></div>
           <div className="space-y-2"><Label htmlFor="programme">{fr ? "Classe ou programme" : "Class or programme"}</Label><Input id="programme" value={programme} onChange={e => setProgramme(e.target.value)} /></div>
         </div>
         <p className="text-xs text-muted-foreground">{fr ? "Les établissements partenaires ne sont pas encore disponibles. Ce brouillon ne constitue pas une demande d’admission." : "Partner institutions are not available yet. This draft is not an admission application."}</p>
-        <Button className="w-full" disabled={!name.trim() || !institution.trim() || !programme.trim() || !level || (scope === "international" && !country.trim())} onClick={() => setReview(true)}><ClipboardList />{fr ? "Voir le brouillon" : "Review Admission Draft"}</Button>
+        <Button className="w-full" disabled={!name.trim() || !institution.trim() || !programme.trim() || !level} onClick={() => setReview(true)}><ClipboardList />{fr ? "Voir le brouillon" : "Review Admission Draft"}</Button>
+        </>)}
       </div>
       <Dialog open={review} onOpenChange={setReview}><DialogContent className="max-w-sm"><DialogHeader><DialogTitle>{fr ? "Brouillon d’admission" : "Admission Draft"}</DialogTitle><DialogDescription>{scope === "national" ? (fr ? "Nationale · Cameroun" : "National · Cameroon") : (fr ? "Internationale" : "International")}</DialogDescription></DialogHeader>
         <dl className="space-y-3 text-sm">{[
