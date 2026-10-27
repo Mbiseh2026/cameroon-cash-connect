@@ -109,7 +109,7 @@ const Index = () => {
           <div className="relative z-10 max-w-[60%]">
             <p className="text-sm opacity-90">{t("welcome_back")}</p>
             <h1 className="text-2xl font-extrabold mb-1">{user.firstName || "Friend"}!</h1>
-            <p className="text-xs opacity-90 leading-snug mb-3">Wallet balance only. Lockable from Profile › Security.</p>
+            <p className="text-xs opacity-90 leading-snug mb-3">Wallet balance only. Protected by your PIN.</p>
             <button onClick={handleBalanceTap} className="bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-bold px-4 py-2 rounded-lg transition inline-flex items-center gap-2">
               {showBalance ? "FCFA 245,000 · Wallet" : (<><Lock size={14} /> {t("view_balance")}</>)}
             </button>
