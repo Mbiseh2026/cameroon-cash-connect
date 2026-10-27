@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { Sparkles, Send, GraduationCap, Users, BookOpen } from "lucide-react";
+import { Sparkles, Send, GraduationCap, Users, BookOpen, MessageCircle } from "lucide-react";
 import PageHeader from "@/components/PageHeader";
 import { Input } from "@/components/ui/input";
 import { useLang } from "@/lib/i18n";
@@ -59,10 +59,17 @@ const AiHelp = () => {
   return (
     <div className="min-h-screen bg-background pb-28">
       <div className="max-w-md mx-auto px-4 pt-6 space-y-4 animate-fade-in">
-        <PageHeader
-          title={fr ? "Aide IA" : "AI Help"}
-          subtitle={fr ? "Pour élèves, enseignants et parents" : "For students, teachers & parents"}
-        />
+        <div className="flex items-start justify-between gap-2">
+          <div className="flex-1"><PageHeader
+            title={fr ? "Aide IA" : "AI Help"}
+            subtitle={fr ? "Pour élèves, enseignants et parents" : "For students, teachers & parents"}
+          /></div>
+          <a href="https://wa.me/237600000000?text=Hi%20Eduvest%2C%20I%20need%20help." target="_blank" rel="noopener noreferrer"
+            aria-label={fr ? "Discuter sur WhatsApp" : "Chat on WhatsApp"}
+            className="mt-1 shrink-0 inline-flex items-center gap-1.5 rounded-full bg-primary text-primary-foreground px-3 py-2 text-xs font-bold shadow">
+            <MessageCircle size={16} /> WhatsApp
+          </a>
+        </div>
 
         <section className="gradient-hero rounded-2xl p-4 text-primary-foreground">
           <div className="flex items-center gap-2">
