@@ -81,8 +81,7 @@ const Index = () => {
 
   const handleBalanceTap = () => {
     if (showBalance) { setShowBalance(false); return; }
-    const lock = localStorage.getItem("walletPinLock") === "1";
-    if (lock) { setPinValue(""); setPinDialog(true); } else setShowBalance(true);
+    setPinValue(""); setPinDialog(true);
   };
 
   const submitPin = () => {

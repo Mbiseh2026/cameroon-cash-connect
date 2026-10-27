@@ -1,4 +1,4 @@
-import { Home, Sparkles, ScanLine, Landmark, User, GraduationCap, HomeIcon, Wallet } from "lucide-react";
+import { Home, Sparkles, ScanLine, Landmark, User, GraduationCap, HomeIcon, Wallet, ShoppingBag } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
@@ -8,11 +8,13 @@ const PAY_OPTIONS_EN = [
   { icon: GraduationCap, label: "Pay Tuition Fees", desc: "School fees & receipts", path: "/pay-fees", tone: "bg-primary/10 text-primary" },
   { icon: HomeIcon, label: "Pay Rent", desc: "Track & build trust", path: "/pay-rent", tone: "bg-secondary/10 text-secondary" },
   { icon: Wallet, label: "Pay Salary", desc: "Pay staff securely", path: "/send", tone: "bg-primary/10 text-primary" },
+  { icon: ShoppingBag, label: "Pay School Supplies", desc: "Books, uniforms, lab kits & laptops", path: "/shopping", tone: "bg-secondary/10 text-secondary" },
 ];
 const PAY_OPTIONS_FR = [
   { icon: GraduationCap, label: "Frais de scolarité", desc: "Frais & reçus", path: "/pay-fees", tone: "bg-primary/10 text-primary" },
   { icon: HomeIcon, label: "Payer le loyer", desc: "Suivre & bâtir la confiance", path: "/pay-rent", tone: "bg-secondary/10 text-secondary" },
   { icon: Wallet, label: "Payer salaire", desc: "Payer le personnel", path: "/send", tone: "bg-primary/10 text-primary" },
+  { icon: ShoppingBag, label: "Fournitures scolaires", desc: "Livres, uniformes, labo & ordinateurs", path: "/shopping", tone: "bg-secondary/10 text-secondary" },
 ];
 
 const BottomNav = () => {
